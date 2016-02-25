@@ -13,15 +13,15 @@ $ openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
 ## API
 
 The following routes are mounted over '/api'
-
+### ROUTES for COMMS
 ### /comms
-'''js
+'''javascript
 .post(commsController.postComms)
 .get(commsController.getComms);
 '''
 
 ### /comms/:comm_id
-'''js
+'''javascript
 .get(commsController.getComm)
 .put(commsController.putComm)
 .delete(commsController.deleteComm);
@@ -29,11 +29,11 @@ The following routes are mounted over '/api'
 
 ### ROUTES for USERS
 ### /users
-'''js
+'''javascript
 .post(userController.postUsers)
 .get(userController.getUsers);
 '''
 ### /users/:user_id
-'''js
+'''javascript
 .delete(userController.deleteUsers);
 '''
