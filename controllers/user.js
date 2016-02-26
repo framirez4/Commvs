@@ -7,7 +7,7 @@ exports.postUsers = function(req, res) {
     username: req.body.username,
     password: req.body.password,
     email:    req.body.email,
-    usertype: 1
+    usertype: req.body.usertype || 1
   });
 
   user.save(function(err) {

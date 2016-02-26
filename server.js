@@ -1,35 +1,36 @@
 // Load required packages
-var fs = require('fs');
-var https = require('https');
-var express = require('express');
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
-//var passport = require('passport');
+var fs          = require('fs');
+var https       = require('https');
+var express     = require('express');
+var mongoose    = require('mongoose');
+var bodyParser  = require('body-parser');
+var morgan      = require('morgan');
+
+var config = require('./config');
 
 var commsController = require('./controllers/comms');
 var userController = require('./controllers/user');
-
-//Configuration
-//Blockin read file
-var options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
-var port = process.env.PORT || 3000;
-// Connect to database
-mongoose.connect('mongodb://localhost:27017/commvs');
+var authController = require('./controllers/auth');
 
 // Create our Express application
 var app = express();
 
+// ==== Configuration ====
+var options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+mongoose.connect(config.database); //connect to database
+var port = process.env.PORT || 3000; //configure port
+app.set('superSecret', config.secret); // secret variable
+
+
 // Use the body-parser package in our application
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(morgan('dev'));
 
-// Use the passport package in our application
-//app.use(passport.initialize());
-
+//==== ROUTES ====
 // Create router at /api
 var router = express.Router();
 
@@ -55,6 +56,9 @@ router.route('/users')
 
 router.route('/users/:user_id')
   .delete(userController.deleteUsers);
+
+router.route('/authenticate')
+  .post(authController.authenticate);
 
 app.use('/api', router);
 
