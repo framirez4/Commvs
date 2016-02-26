@@ -1,7 +1,6 @@
 // Load required packages
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
-var validator = require('validator');
 
 
 // Define our user schema

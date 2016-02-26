@@ -24,7 +24,6 @@ exports.postComms = function(req, res) {
 
 // Create endpoint /api/comms for GET
 exports.getComms = function(req, res) {
-  console.log(JSON.stringify(req.user));
   // Use the Commerce model to find all commerces
   Commerce.find(function(err, comms) {
     if (err)

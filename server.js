@@ -8,9 +8,6 @@ var bodyParser = require('body-parser');
 
 var commsController = require('./controllers/comms');
 var userController = require('./controllers/user');
-var authController = require('./controllers/auth');
-var clientController = require('./controllers/client');
-var oauth2Controller = require('./controllers/oauth2');
 
 //Configuration
 //Blockin read file
@@ -43,35 +40,21 @@ router.get('/', function(req, res) {
 
 //ROUTES for COMMS
 router.route('/comms')
-  .post(/*authController.isAuthenticated, */commsController.postComms)
-  .get(/*authController.isAuthenticated, */commsController.getComms);
+  .post(commsController.postComms)
+  .get(commsController.getComms);
 
 router.route('/comms/:comm_id')
-  .get(/*authController.isAuthenticated, */commsController.getComm)
-  .put(/*authController.isAuthenticated, */commsController.putComm)
-  .delete(/*authController.isAuthenticated, */commsController.deleteComm);
+  .get(commsController.getComm)
+  .put(commsController.putComm)
+  .delete(commsController.deleteComm);
 
 // ROUTES for USERS
 router.route('/users')
   .post(userController.postUsers)
-  .get(/*authController.isAuthenticated, */userController.getUsers);
+  .get(userController.getUsers);
 
 router.route('/users/:user_id')
-  .delete(/*authController.isAuthenticated, */userController.deleteUsers);
-
-// Create endpoint handlers for /clients
-router.route('/clients')
-  .post(/*authController.isAuthenticated, */clientController.postClients)
-  .get(/*authController.isAuthenticated, */clientController.getClients);
-
-  // Create endpoint handlers for oauth2 authorize
-  router.route('/oauth2/authorize')
-    .get(/*authController.isAuthenticated, */oauth2Controller.authorization)
-    .post(/*authController.isAuthenticated, */oauth2Controller.decision);
-
-  // Create endpoint handlers for oauth2 token
-  router.route('/oauth2/token')
-    .post(/*authController.isClientAuthenticated, */oauth2Controller.token);
+  .delete(userController.deleteUsers);
 
 app.use('/api', router);
 
