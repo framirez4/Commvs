@@ -11,8 +11,8 @@ exports.authenticate = function(req, res) {
       else if (user) {
         // Make sure the password is correct
         user.verifyPassword(req.body.password, function(err, isMatch) {
-        if(err){ res.json(
-          { success:false, message: 'Authentication failed. Wrong password.'});
+        if(!isMatch) { 
+          res.json({ success: false, message: 'Authentication failed. Wrong password.'});
         } else if (isMatch) {
           // if user is found and password is right
           // create a token
