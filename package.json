@@ -20,7 +20,8 @@
     "mongoose": "^4.4.3",
     "morgan": "^1.7.0",
     "passport": "^0.3.2",
-    "passport-http": "^0.3.0"
+    "passport-http": "^0.3.0",
+    "passport-jwt": "^2.0.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1"

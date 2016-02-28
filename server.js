@@ -68,27 +68,27 @@ router.use(function(req, res, next) {
 });
 */
 // http://localhost:3000/api
-router.get('/', function(req, res) {
+router.get('/', authController.isAuthJwt, function(req, res) {
   res.json({ message: 'Commvs api root directory' });
 });
 
 //ROUTES for COMMS
 router.route('/comms')
-  .post(authController.isAuthenticated, commsController.postComms)
-  .get(authController.isAuthenticated, commsController.getComms);
+  .post(authController.isAuthJwt, commsController.postComms)
+  .get(authController.isAuthJwt, commsController.getComms);
 
 router.route('/comms/:comm_id')
-  .get(authController.isAuthenticated, commsController.getComm)
-  .put(authController.isAuthenticated, commsController.putComm)
-  .delete(authController.isAuthenticated, commsController.deleteComm);
+  .get(authController.isAuthJwt, commsController.getComm)
+  .put(authController.isAuthJwt, commsController.putComm)
+  .delete(authController.isAuthJwt, commsController.deleteComm);
 
 // ROUTES for USERS
 router.route('/users')
-  .post(authController.isAuthenticated, userController.postUsers)
-  .get(authController.isAuthenticated, userController.getUsers);
+  .post(authController.isAuthJwt, userController.postUsers)
+  .get(authController.isAuthJwt, userController.getUsers);
 
 router.route('/users/:user_id')
-  .delete(userController.deleteUsers);
+  .delete(authController.isAuthJwt, userController.deleteUsers);
 
 /*router.route('/authenticate')
   .post(authController.authenticate);
