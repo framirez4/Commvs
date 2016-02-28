@@ -34,7 +34,7 @@ app.use(morgan('dev'));
 //==== ROUTES ====
 // Create router at /api
 var router = express.Router();
-
+/*
 // route middleware to verify a token
 router.use(function(req, res, next) {
 
@@ -45,7 +45,7 @@ router.use(function(req, res, next) {
   if (token) {
 
     // verifies secret and checks exp
-    jwt.verify(token, app.get('superSecret'), function(err, decoded) {
+    jwt.verify(token, config.secret, function(err, decoded) {
       if (err) {
         return res.json({ success: false, message: 'Failed to authenticate token.' });
       } else {
@@ -66,7 +66,7 @@ router.use(function(req, res, next) {
 
   }
 });
-
+*/
 // http://localhost:3000/api
 router.get('/', function(req, res) {
   res.json({ message: 'Commvs api root directory' });
@@ -74,25 +74,25 @@ router.get('/', function(req, res) {
 
 //ROUTES for COMMS
 router.route('/comms')
-  .post(commsController.postComms)
-  .get(commsController.getComms);
+  .post(authController.isAuthenticated, commsController.postComms)
+  .get(authController.isAuthenticated, commsController.getComms);
 
 router.route('/comms/:comm_id')
-  .get(commsController.getComm)
-  .put(commsController.putComm)
-  .delete(commsController.deleteComm);
+  .get(authController.isAuthenticated, commsController.getComm)
+  .put(authController.isAuthenticated, commsController.putComm)
+  .delete(authController.isAuthenticated, commsController.deleteComm);
 
 // ROUTES for USERS
 router.route('/users')
-  .post(userController.postUsers)
-  .get(userController.getUsers);
+  .post(authController.isAuthenticated, userController.postUsers)
+  .get(authController.isAuthenticated, userController.getUsers);
 
 router.route('/users/:user_id')
   .delete(userController.deleteUsers);
 
-router.route('/authenticate')
+/*router.route('/authenticate')
   .post(authController.authenticate);
-
+*/
 app.use('/api', router);
 
 // Start the server

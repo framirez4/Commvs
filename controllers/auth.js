@@ -1,33 +1,28 @@
-var jwt         = require('jsonwebtoken');
-var config         = require('../config');
+// Load required packages
+var passport = require('passport');
+var BasicStrategy = require('passport-http').BasicStrategy;
 var User = require('../models/user');
 
-exports.authenticate = function(req, res) {
-  User.findOne({ username: req.body.username }, function (err, user) {
-      // No user found with that username
-      if (!user) {
-        res.json({ success: false, message: 'Authentication failed. User not found.' });
-      }
-      else if (user) {
-        // Make sure the password is correct
-        user.verifyPassword(req.body.password, function(err, isMatch) {
-        if(!isMatch) { 
-          res.json({ success: false, message: 'Authentication failed. Wrong password.'});
-        } else if (isMatch) {
-          // if user is found and password is right
-          // create a token
-          var token = jwt.sign(user, config.secret, {
-            expiresInMinutes: 1440 // expires in 24 hours
-          });
+passport.use(new BasicStrategy(
+  function(username, password, callback) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return callback(err); }
 
-          // return the information including token as JSON
-          res.json({
-            success: true,
-            message: 'Enjoy your token!',
-            token: token
-          });
-        };
+      // No user found with that username
+      if (!user) { return callback(null, false); }
+
+      // Make sure the password is correct
+      user.verifyPassword(password, function(err, isMatch) {
+        if (err) { return callback(err); }
+
+        // Password did not match
+        if (!isMatch) { return callback(null, false); }
+
+        // Success
+        return callback(null, user);
       });
-    };
-  });
-};
+    });
+  }
+));
+
+exports.isAuthenticated = passport.authenticate('basic', { session : false });
