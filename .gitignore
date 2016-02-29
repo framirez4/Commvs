@@ -1,7 +1,5 @@
-# Certificate for https #
-cert.pem
-csr.pem
-key.pem
+# Keys folder for server key #
+keys
 
 # nodejs
 node_modules

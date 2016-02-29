@@ -1,6 +1,6 @@
-var jwt         = require('jsonwebtoken');
-var config         = require('../config');
-var User = require('../models/user');
+var jwt     = require('jsonwebtoken');
+var config  = require('../config');
+var User    = require('../models/user');
 
 exports.authenticate = function(req, res) {
   User.findOne({ username: req.body.username }, function (err, user) {
@@ -16,9 +16,8 @@ exports.authenticate = function(req, res) {
         } else if (isMatch) {
           // if user is found and password is right
           // create a token
-          var token = jwt.sign(user, config.secret, {
-            expiresInMinutes: 1440 // expires in 24 hours
-          });
+          console.log(JSON.stringify(user));
+          var token = jwt.sign(user, config.secret.simple_key);
 
           // return the information including token as JSON
           res.json({
@@ -42,7 +41,7 @@ exports.verifyAccount = function(req, res, next) {
   if (token) {
 
     // verifies secret and checks exp
-    jwt.verify(token, config.secret, function(err, decoded) {
+    jwt.verify(token, config.secret.simple_key, function(err, decoded) {
       if (err) {
         return res.json({ success: false, message: 'Failed to authenticate token.' });
       } else {
