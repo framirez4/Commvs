@@ -11,7 +11,7 @@ exports.authenticate = function(req, res) {
       else if (user) {
         // Make sure the password is correct
         user.verifyPassword(req.body.password, function(err, isMatch) {
-        if(!isMatch) { 
+        if(!isMatch) {
           res.json({ success: false, message: 'Authentication failed. Wrong password.'});
         } else if (isMatch) {
           // if user is found and password is right
@@ -30,4 +30,36 @@ exports.authenticate = function(req, res) {
       });
     };
   });
+};
+
+// route middleware to verify a token
+exports.verifyAccount = function(req, res, next) {
+
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+  // decode token
+  if (token) {
+
+    // verifies secret and checks exp
+    jwt.verify(token, config.secret, function(err, decoded) {
+      if (err) {
+        return res.json({ success: false, message: 'Failed to authenticate token.' });
+      } else {
+        // if everything is good, save to request for use in other routes
+        req.decoded = decoded;
+        next();
+      }
+    });
+
+  } else {
+
+    // if there is no token
+    // return an error
+    return res.status(403).send({
+        success: false,
+        message: 'No token provided.'
+    });
+
+  }
 };
