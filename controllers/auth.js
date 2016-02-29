@@ -15,8 +15,7 @@ exports.authenticate = function(req, res) {
           res.json({ success: false, message: 'Authentication failed. Wrong password.'});
         } else if (isMatch) {
           // if user is found and password is right
-          // create a token
-          console.log(JSON.stringify(user));
+          // create a tokens
           var token = jwt.sign(user, config.secret.simple_key);
 
           // return the information including token as JSON
@@ -32,7 +31,7 @@ exports.authenticate = function(req, res) {
 };
 
 // route middleware to verify a token
-exports.verifyAccount = function(req, res, next) {
+exports.verifyToken = function(req, res, next) {
 
   // check header or url parameters or post parameters for token
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -47,6 +46,7 @@ exports.verifyAccount = function(req, res, next) {
       } else {
         // if everything is good, save to request for use in other routes
         req.decoded = decoded;
+        console.log(JSON.stringify(req.decoded._doc.usertype));
         next();
       }
     });

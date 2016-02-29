@@ -74,3 +74,10 @@ exports.deleteComm = function(req, res) {
     res.json({ message: 'Commerce removed from the list!' });
   });
 };
+
+exports.getOwnerKey = function(req, res) {
+  res.json({ message: 'getOnwerKey function directory' });
+};
+exports.setOwnerKey = function(req, res) {
+  res.json({ message: 'setOnwerKey function directory' });
+};
