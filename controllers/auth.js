@@ -3,30 +3,35 @@ var config  = require('../config');
 var User    = require('../models/user');
 
 exports.authenticate = function(req, res) {
+  console.log(req.body);
   User.findOne({ username: req.body.username }, function (err, user) {
-      // No user found with that username
-      if (!user) {
-        res.json({ success: false, message: 'Authentication failed. User not found.' });
-      }
-      else if (user) {
-        // Make sure the password is correct
-        user.verifyPassword(req.body.password, function(err, isMatch) {
-        if(!isMatch) {
-          res.json({ success: false, message: 'Authentication failed. Wrong password.'});
-        } else if (isMatch) {
-          // if user is found and password is right
-          // create a tokens
-          var token = jwt.sign(user, config.secret.simple_key);
+    if(err){ return err }
+    else {
+            // No user found with that username
+        if (!user) {
+          res.json({ success: false, message: 'Authentication failed. User not found.' });
+        }
+        else if (user) {
+          // Make sure the password is correct
+          user.verifyPassword(req.body.password, function(err, isMatch) {
+          if(!isMatch) {
+            res.json({ success: false, message: 'Authentication failed. Wrong password.'});
+          } else if (isMatch) {
+            // if user is found and password is right
+            // create a tokens
+            var token = jwt.sign(user, config.secret.simple_key);
 
-          // return the information including token as JSON
-          res.json({
-            success: true,
-            message: 'Enjoy your token!',
-            token: token
-          });
-        };
-      });
-    };
+            // return the information including token as JSON
+            res.json({
+              success: true,
+              message: 'Enjoy your token!',
+              token: token
+            });
+          };
+        });
+      };
+    }
+
   });
 };
 
@@ -38,7 +43,6 @@ exports.verifyToken = function(req, res, next) {
 
   // decode token
   if (token) {
-
     // verifies secret and checks exp
     jwt.verify(token, config.secret.simple_key, function(err, decoded) {
       if (err) {
@@ -50,11 +54,8 @@ exports.verifyToken = function(req, res, next) {
         next();
       }
     });
-
   } else {
-
-    // if there is no token
-    // return an error
+    // if there is no token, return an error
     return res.status(403).send({
         success: false,
         message: 'No token provided.'

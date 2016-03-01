@@ -5,8 +5,8 @@ module.exports = {
 
     'secret': {
       'simple_key': 'secretKey',
-      'private': fs.readFileSync('./keys/private_key.pem'),
-      'public':  fs.readFileSync('./keys/public_key.pem')
+      'private': fs.readFileSync('./keys/id_rsa'),
+      'public':  fs.readFileSync('./keys/id_rsa.pub')
     },
     'database': 'mongodb://localhost:27017/commvs',
     'port': process.env.PORT || 3000,
