@@ -3,7 +3,6 @@ var config  = require('../config');
 var User    = require('../models/user');
 
 exports.authenticate = function(req, res) {
-  console.log(req.body);
   User.findOne({ username: req.body.username }, function (err, user) {
     if(err){ return err }
     else {

@@ -9,7 +9,7 @@ module.exports = {
       'public':  fs.readFileSync('./keys/id_rsa.pub')
     },
     'database': 'mongodb://localhost:27017/commvs',
-    'port': process.env.PORT || 3000,
+    'port': process.env.PORT || 8000,
     'options': {
       'key': fs.readFileSync('./keys/key.pem'),
       'cert': fs.readFileSync('./keys/cert.pem')
