@@ -9,7 +9,6 @@ exports.postUsers = function(req, res) {
     email:    req.body.email,
     usertype: req.body.usertype || 1
   });
-
   user.save(function(err) {
     if (err){
       res.send(err.errors);

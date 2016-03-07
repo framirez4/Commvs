@@ -19,7 +19,7 @@ exports.authenticate = function(req, res) {
             // if user is found and password is right
             // create a tokens
             var token = jwt.sign(user, config.secret.simple_key);
-
+console.log(token);
             // return the information including token as JSON
             res.json({
               success: true,

@@ -14,8 +14,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
-//app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
-//app.use(helmet());
+app.use(helmet());
 
 
 // ==== MOUNT ROUTES ====
