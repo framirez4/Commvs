@@ -3,6 +3,7 @@ var mongoose    = require('mongoose');
 var morgan      = require('morgan');
 var bodyParser  = require('body-parser');
 var helmet      = require('helmet');
+var cors        = require('cors');
 var app         = express(); //Create express app
 
 var config = require('./config');
@@ -12,8 +13,9 @@ mongoose.connect(config.database);  //Connect database
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 //app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
-app.use(helmet());
+//app.use(helmet());
 
 
 // ==== MOUNT ROUTES ====
