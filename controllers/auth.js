@@ -16,10 +16,15 @@ exports.authenticate = function(req, res) {
           if(!isMatch) {
             res.json({ success: false, message: 'Authentication failed. Wrong password.'});
           } else if (isMatch) {
-            // if user is found and password is right
-            // create a tokens
-            var token = jwt.sign(user, config.secret.simple_key);
-console.log(token);
+            // if user is found and password is right, create a token
+            if (user.usertype == '0'){
+              console.log('ADMIN USER LOGGED IN');
+              var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
+            } else {
+              var token = jwt.sign(user, config.secret.simple_key);
+            }
+
+
             // return the information including token as JSON
             res.json({
               success: true,

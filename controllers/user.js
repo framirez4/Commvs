@@ -11,9 +11,24 @@ exports.postUsers = function(req, res) {
   });
   user.save(function(err) {
     if (err){
-      res.send(err.errors);
+
+      //res.json({ success: false, error: err.errmsg });
+      if(err.errmsg) {
+        res.json({ success: false, message: err.errmsg });
+      } else {
+
+        if(err.errors){
+          errors = [];
+          if(err.errors.username){errors.push(err.errors.username.message)};
+          if(err.errors.password){errors.push(err.errors.password.message)};
+          if(err.errors.email){errors.push(err.errors.email.message)};
+
+          res.json({ success: false, message: errors });
+        }
+      }
+
     } else {
-      res.json({ message: 'New user added!' });
+      res.json({ success: true, message: 'New user added!' });
     }
   });
 };

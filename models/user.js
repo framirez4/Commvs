@@ -9,12 +9,13 @@ var UserSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: true,
-    minlength: [8, 'The value of {PATH} `{VALUE}` is shorter than the minimum allowed length ({MINLENGTH}).'],
+    minlength: [6, 'The value of {PATH} `{VALUE}` is shorter than the minimum allowed length ({MINLENGTH}).'],
     maxlength: [25, 'The value of {PATH} `{VALUE}` exceeds the maximum allowed length ({MAXLENGTH}).']
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    minlength: [4, 'The value of {PATH} `{VALUE}` is shorter than the minimum allowed length ({MINLENGTH}).']
   },
   email: {
     type: String,
