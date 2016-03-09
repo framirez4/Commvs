@@ -10,14 +10,14 @@ exports.postComms = function(req, res) {
   commerce.name = req.body.name;
   commerce.description = req.body.description;
   commerce.phone = req.body.phone;
-  commerce.userAdminId = req.user._id;
+  //commerce.userAdminId = req.user._id;
 
   // Save the commerce and check for errors
   commerce.save(function(err) {
     if (err){
-      res.send(err);
+      res.json({ success: false, error: err });
     } else {
-      res.json({ message: 'Commerce added to the list!', data: commerce });
+      res.json({ success: true, message: 'Commerce added to the list!', data: commerce });
     }
   });
 };

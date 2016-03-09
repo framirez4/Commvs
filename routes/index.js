@@ -1,17 +1,19 @@
-var express     = require('express');
-
+// ==== MAIN ROUTES FILE ====
 var authController = require('../controllers/auth');
 
-//==== ROUTES ====
-var router = express.Router(); //create router
-router.use('/comms', require('./comms'));
-router.use('/users', require('./user'));
+var router = require('express').Router(); //create router
 
+//==== ROUTES ====
+
+//Teset root route
 router.get('/', function(req, res) {
   res.json({ message: 'Commvs api root directory' });
 });
-router.route('/authenticate')
-  .post(authController.authenticate);
+
+//Main mounted routes
+router.use('/comms', require('./comms'));
+router.use('/users', require('./user'));
+router.route('/authenticate').post(authController.authenticate);
 
 
 module.exports = router;

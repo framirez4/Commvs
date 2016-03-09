@@ -1,16 +1,17 @@
-var express     = require('express');
-var connectRoles = require('connect-roles');
+// Require modules
+var connectRoles    = require('connect-roles');
 
+// Require controllers
 var commsController = require('../controllers/comms');
-var authController = require('../controllers/auth');
-var user = require('../controllers/role');
+var authController  = require('../controllers/auth');
+var user            = require('../controllers/role');
 
-var router = express.Router(); //create router
+var router          = require('express').Router(); // Create router
 
 //ROUTES for COMMS
 router.route('/')
-  .post(authController.verifyToken, user.can('access admin function'), commsController.postComms)
-  .get(commsController.getComms);
+  .get(commsController.getComms)
+  .post(authController.verifyToken, user.can('access admin function'), commsController.postComms);
 
 router.route('/:comm_id')
   .get(commsController.getComm)

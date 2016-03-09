@@ -1,18 +1,18 @@
 var fs = require('fs');
 
-//secret and database
+var dotenv = require('dotenv').config(); // Load .env config.
+
+
 module.exports = {
 
     'secret': {
-      'simple_key': 'secretKey',
-      'private': fs.readFileSync('./keys/id_rsa'),
-      'public':  fs.readFileSync('./keys/id_rsa.pub')
+      'simple_key': process.env.SECRET || 'secret'
     },
-    'database': 'mongodb://localhost:27017/commvs',
-    'port': process.env.PORT || 8000,
+    'database': process.env.DB_HOST || 'mongodb://localhost:27017/commvs',
+    'port': process.env.PORT || 3000,
     'options': {
-      'key': fs.readFileSync('./keys/key.pem'),
-      'cert': fs.readFileSync('./keys/cert.pem')
+      'key': fs.readFileSync(process.env.OPTIONS_KEY || './keys/key.pem'),
+      'cert': fs.readFileSync(process.env.OPTIONS_CERT || './keys/cert.pem')
     }
 
 };

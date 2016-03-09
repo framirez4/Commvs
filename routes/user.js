@@ -1,11 +1,12 @@
-var express     = require('express');
-var connectRoles = require('connect-roles');
+// Require modules
+var connectRoles    = require('connect-roles');
 
-var userController = require('../controllers/user');
-var authController = require('../controllers/auth');
-var user = require('../controllers/role');
+// Require controllers
+var userController  = require('../controllers/user');
+var authController  = require('../controllers/auth');
+var user            = require('../controllers/role');
 
-var router = express.Router(); //create router
+var router          = require('express').Router(); // Create router
 
 // ROUTES for USERS
 router.route('/')
