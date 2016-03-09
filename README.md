@@ -3,9 +3,17 @@
 API for a commerce listing app.
 
 ## Usage
+Server will load configuration from ```config.js``` file. All values can be customized by adding a ```.env``` file:
++ **Route to MongoDB**: DB_HOST, *default: ```'mongodb://localhost:27017/commvs'```*. 
++ **Port**: PORT, *default value: ```3000```*.
++ **Options**: routes to options ```key``` and ```cert```.
+  + OPTIONS_KEY, *default: ```'./keys/key.pem'```*
+  + OPTIONS_CERT, *default: ```'./keys/cert.pem'```*
++ **Password**: secret used to ```sign``` and ```verify``` JWTs.
+  + *default: ```'secret'```*
 
-As the server is HTTPS, a key and a certificate are needed. Server ('server.js' file) will read 'key.pem' and 'cert.pem'.
-Use the following lines to generate the 'cert.pem'.
+As passwords and JWTs are sent to the server, it is required a secure server HTTPS. The following lines can be used to generate the ```key``` and ```cert``` required by ```config.js```:
+
 ```
 $ openssl genrsa -out key.pem
 $ openssl req -new -key key.pem -out csr.pem
@@ -14,28 +22,25 @@ $ openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
 
 ## API
 
-The following routes are mounted over '/api'
+All routes from ```router``` are mounted over ```'/api'```
 ### ROUTES for COMMS
-### /comms
-```javascript
-.post(commsController.postComms)
-.get(commsController.getComms);
-```
+#### #/comms
++ 'GET': No data required.
++ 'POST': Headers ```x-access-token```. Admin required.
 
-### /comms/:comm_id
-```javascript
-.get(commsController.getComm)
-.put(commsController.putComm)
-.delete(commsController.deleteComm);
-```
+#### #/comms/:comm_id
++ 'GET'
++ 'PUT': Headers ```x-access-token```. Admin or Owner required.
++ 'DELETE': Headers ```x-access-token```. Admin required.
+#### #/comms/:comm_id/ownerkey
++ 'GET': Headers ```x-access-token```. Admin required.
++ 'POST': Headers ```x-access-token```. Owner required.
 
 ### ROUTES for USERS
-### /users
-```javascript
-.post(userController.postUsers)
-.get(userController.getUsers);
-```
-### /users/:user_id
-```javascript
-.delete(userController.deleteUsers);
-```
+#### #/users
++ 'POST': No date required.
++ 'GET': Headers ```x-access-token```. Admin required.
+#### #/users/:user_id
++ 'GET': Headers ```x-access-token```. Admin or Owner required.
++ 'PUT': Headers ```x-access-token```. Admin or Owner required.
++ 'DELETE': Headers ```x-access-token```. Admin required.
