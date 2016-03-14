@@ -9,22 +9,11 @@ var UserSchema = new mongoose.Schema({
     type: String,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
   },
-  /*  type: String,
-    unique: true,
-    required: true,
-    minlength: [6, 'The value of {PATH} `{VALUE}` is shorter than the minimum allowed length ({MINLENGTH}).'],
-    maxlength: [25, 'The value of {PATH} `{VALUE}` exceeds the maximum allowed length ({MAXLENGTH}).']
-  },*/
   'password': {
     type: String,
     required: true,
     minlength: [4, 'The value of {PATH} `{VALUE}` is shorter than the minimum allowed length ({MINLENGTH}).']
   },
-  /*email: {
-    type: String,
-    required: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
-  },*/
   'role': {
     type: String,
     default: 'user'
@@ -37,7 +26,7 @@ var UserSchema = new mongoose.Schema({
 // Virtual value to match _id as email
 UserSchema.virtual('email').get(function() {
   return this._id;
-})
+});
 
 // Execute before each user.save() call
 UserSchema.pre('save', function(callback) {

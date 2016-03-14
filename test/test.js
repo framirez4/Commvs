@@ -1,4 +1,5 @@
 var myApp = require('./servertest.js');
+var assert = require('assert');
 var request = require('supertest')(myApp);
 var adminToken = '';
 var userToken = '';
@@ -42,6 +43,19 @@ describe('TEST ADMIN USER', function() {
         role: 'admin'
       })
       .expect(200, {"success":true,"message":"New user added!"}, done);
+  });
+  it('creates a duplicate user', function (done) {
+    request
+      .post('/api/users')
+      .send({
+        email: 'test@test.com',
+        password: '1234',
+        role: 'admin'
+      })
+      .expect(200, {
+        "success": false,
+        "message": "E11000 duplicate key error index: commvs.users.$_id_ dup key: { : \"test@test.com\" }"
+      }, done);
   });
   it('authenticates an admin user', function (done){
     request
@@ -97,4 +111,57 @@ describe('TEST ADMIN USER', function() {
   });
 });
 
-describe('DO ADMIN ACTIONS', function(){
+describe('DO ADMIN-ONLY ACTIONS', function(){
+  it('creates a new comm', function (done) {
+    request
+      .post('/api/comms')
+      .send({
+        "token": adminToken,
+        "name": "Tienda",
+        "activity": "Salud",
+        "gps": "(54.49593, 39.91938)",
+        "web": "www.example.com",
+        "email": "tienda@tienda.com",
+        "address": "calle 1, Barcelona",
+        "phone": "664664664",
+        "description": "tienda de tienda tienda",
+      })
+      .expect(200)
+      .end(function(err,res){
+        assert.equal(res.body.success, true);
+        done();
+      });
+  });
+  it('cannot create a duplicate comm', function (done) {
+    request
+      .post('/api/comms')
+      .send({
+        "token": adminToken,
+        "name": "Tienda"
+      })
+      .expect(200)
+      .end(function(err,res){
+        assert.equal(res.body.success, false);
+        done();
+      });
+  });
+  it('gets a comm', function (done) {
+    request
+      .get('/api/comms/Tienda')
+      .expect(200)
+      .end(function(err, res){
+        assert.equal(res.body.hasOwnProperty('_id'), true);
+        done();
+      });
+  });
+  it('deletes a comm', function (done) {
+    request
+      .delete('/api/comms/Tienda')
+      .send( {token: adminToken } )
+      .expect(200, {
+        "message": "Commerce removed from the list!"
+      }, done);
+
+  });
+
+});
