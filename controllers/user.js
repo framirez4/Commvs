@@ -4,24 +4,24 @@ var User = require('../models/user');
 // Create endpoint /api/users for POST
 exports.postUsers = function(req, res) {
   var user = new User({
-    username: req.body.username,
-    password: req.body.password,
-    email:    req.body.email,
-    usertype: req.body.usertype || 1
+    '_id': req.body.email,
+    'password': req.body.password,
+    'role': req.body.role || 'user'
   });
+
+
   user.save(function(err) {
     if (err){
 
       //res.json({ success: false, error: err.errmsg });
       if(err.errmsg) {
         res.json({ success: false, message: err.errmsg });
-      } else {
 
+      } else {
         if(err.errors){
           errors = [];
-          if(err.errors.username){errors.push(err.errors.username.message)};
-          if(err.errors.password){errors.push(err.errors.password.message)};
-          if(err.errors.email){errors.push(err.errors.email.message)};
+          if(err.errors['_id']){errors.push(err.errors['_id'].message)};
+          if(err.errors['password']){errors.push(err.errors['password'].message)};
 
           res.json({ success: false, message: errors });
         }
@@ -42,12 +42,33 @@ exports.getUsers = function(req, res) {
     res.json(users);
   });
 };
+exports.editPassword = function(req, res) {
 
-exports.deleteUsers = function(req, res) {
-  User.findByIdAndRemove(req.params.user_id, function(err) {
+  User.findById( req.decoded['_doc']['_id'], function(err, user) {
     if (err)
       res.send(err);
 
-    res.json({ message: 'User removed from the list!' });
+    // Update the existing comm quantity
+    user.password = req.body.password;
+
+    // Save the beer and check for errors
+    user.save(function(err) {
+      if (err && err.errors){
+        res.json({success: false, message: err.errors['password'].message});
+      } else {
+        res.json({success:true, message: 'Password successfully changed'});
+      }
+
+    });
+  });
+};
+
+exports.deleteUsers = function(req, res) {
+  User.findByIdAndRemove(req.body.email, function(err) {
+    if (err){
+      res.send(err);
+    } else {
+      res.json({ message: 'User removed from our database' });
+    }
   });
 };

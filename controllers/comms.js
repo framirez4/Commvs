@@ -1,3 +1,6 @@
+// Load packages
+var keygen = require('keygenerator');
+
 var Commerce = require('../models/commerces');
 
 
@@ -64,19 +67,21 @@ exports.putComm = function(req, num, raw) {
   });
 };
 
-// Create endpoint /api/beers/:comm_id for DELETE_byId
+// Create endpoint /api/comms/:comm_id for DELETE_byId
 exports.deleteComm = function(req, res) {
   // Use the Beer model to find a specific beer and remove it
   Commerce.findByIdAndRemove(req.params.comm_id, function(err) {
-    if (err)
+    if (err){
       res.send(err);
+    } else {
+      res.json({ message: 'Commerce removed from the list!' });
 
-    res.json({ message: 'Commerce removed from the list!' });
+    }
   });
 };
 
 exports.getOwnerKey = function(req, res) {
-  res.json({ message: 'getOnwerKey function directory' });
+  res.json({ success: true, key: keygen.number() });
 };
 exports.setOwnerKey = function(req, res) {
   res.json({ message: 'setOnwerKey function directory' });

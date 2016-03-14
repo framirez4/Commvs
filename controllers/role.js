@@ -13,7 +13,7 @@ var user = new connectRoles({
 });
 
 user.use('access admin function', function (req) {
-  if (req.decoded._doc.usertype === '0') {
+  if (req.decoded._doc.role === 'admin') {
     return true;
   }
 })

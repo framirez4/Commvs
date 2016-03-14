@@ -3,7 +3,7 @@ var config  = require('../config');
 var User    = require('../models/user');
 
 exports.authenticate = function(req, res) {
-  User.findOne({ username: req.body.username }, function (err, user) {
+  User.findOne({ '_id': req.body.email }, function (err, user) {
     if(err){ return err }
     else {
             // No user found with that username
@@ -17,7 +17,7 @@ exports.authenticate = function(req, res) {
             res.json({ success: false, message: 'Authentication failed. Wrong password.'});
           } else if (isMatch) {
             // if user is found and password is right, create a token
-            if (user.usertype == '0'){
+            if (user.role == 'admin'){
               console.log('ADMIN USER LOGGED IN');
               var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
             } else {
@@ -54,7 +54,7 @@ exports.verifyToken = function(req, res, next) {
       } else {
         // if everything is good, save to request for use in other routes
         req.decoded = decoded;
-        console.log(JSON.stringify(req.decoded._doc.usertype));
+        console.log(JSON.stringify(req.decoded._doc.role));
         next();
       }
     });
