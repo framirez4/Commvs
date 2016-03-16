@@ -7,34 +7,34 @@ exports.authenticate = function(req, res) {
     if(err){ return err }
     else {
             // No user found with that username
-        if (!user) {
-          res.json({ success: false, message: 'Authentication failed. User not found.' });
-        }
-        else if (user) {
-          // Make sure the password is correct
-          user.verifyPassword(req.body.password, function(err, isMatch) {
-          if(!isMatch) {
-            res.json({ success: false, message: 'Authentication failed. Wrong password.'});
-          } else if (isMatch) {
-            // if user is found and password is right, create a token
-            /*if (user.role == 'admin'){
-              var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
-            } else {
-              var token = jwt.sign(user, config.secret.simple_key);
-            }*/
-            var token = jwt.sign(user, config.secret.simple_key);
+      if (!user) {
+        res.json({ success: false, message: 'Authentication failed. User not found.' });
+      }
+      else if (user) {
+        // Make sure the password is correct
+        user.verifyPassword(req.body.password, function(err, isMatch) {
+        if(!isMatch) return res.json({ success: false, message: 'Authentication failed. Wrong password.'});
 
-            // return the information including token as JSON
-            res.json({
-              success: true,
-              message: 'Enjoy your token!',
-              token: token
-            });
-          };
+          // Remove password hash from object
+          user.password = undefined;
+
+          // if user is found and password is right, create a token
+          /*if (user.role == 'admin'){
+            var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
+          } else {
+            var token = jwt.sign(user, config.secret.simple_key);
+          }*/
+          var token = jwt.sign(user, config.secret.simple_key);
+
+          // return the information including token as JSON
+          res.json({
+            success: true,
+            message: 'Enjoy your token!',
+            token: token
+          });
         });
       };
     }
-
   });
 };
 
