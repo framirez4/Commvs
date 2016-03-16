@@ -13,7 +13,8 @@ router.get('/', function(req, res) {
 //Main mounted routes
 router.use('/comms', require('./comms'));
 router.use('/users', require('./user'));
-router.route('/authenticate').post(authController.authenticate); // Authenticate any user. Returns a JWT. 
+router.use('/favs',  require('./favs'));
+router.route('/authenticate').post(authController.authenticate); // Authenticate any user. Returns a JWT.
 
 
 module.exports = router;

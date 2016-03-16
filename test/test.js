@@ -17,7 +17,7 @@ describe('LOAD EXPRESS APP', function(){
   });
 });
 
-describe('TEST ADMIN USER', function() {
+describe('TEST ADMIN USER test@test.com', function() {
 
   it('creates a wrong user', function (done) {
     request
@@ -100,15 +100,7 @@ describe('TEST ADMIN USER', function() {
       })
       .expect(200, {"message": "User removed from our database"}, done);
   });*/
-  it('admin deletes a user', function (done) {
-    request
-      .delete('/api/users')
-      .send({
-        token: adminToken,
-        email: 'test@test.com'
-      })
-      .expect(200, {"message": "User removed from our database"}, done);
-  });
+
 });
 
 describe('DO ADMIN-ONLY ACTIONS', function(){
@@ -118,13 +110,14 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
       .send({
         "token": adminToken,
         "name": "Tienda",
+        "location": "Barcelona",
         "activity": "Salud",
         "gps": "(54.49593, 39.91938)",
         "web": "www.example.com",
         "email": "tienda@tienda.com",
-        "address": "calle 1, Barcelona",
+        "address": "calle 1, 48",
         "phone": "664664664",
-        "description": "tienda de tienda tienda",
+        "description": "Shop description",
       })
       .expect(200)
       .end(function(err,res){
@@ -137,7 +130,8 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
       .post('/api/comms')
       .send({
         "token": adminToken,
-        "name": "Tienda"
+        "name": "Tienda",
+        "location": "Barcelona"
       })
       .expect(200)
       .end(function(err,res){
@@ -147,16 +141,42 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('gets a comm', function (done) {
     request
-      .get('/api/comms/Tienda')
+      .get('/api/comms/barcelona_tienda')
       .expect(200)
       .end(function(err, res){
         assert.equal(res.body.hasOwnProperty('_id'), true);
         done();
       });
   });
+
+  it('sets a com as fav', function(done){
+    request
+      .post('/api/favs')
+      .send({
+        token: adminToken,
+        comm_id: 'barcelona_tienda'
+      })
+      .expect(200, {
+        "success": true,
+        "message": "Fav added: barcelona_tienda"
+      }, done);
+  });
+  it('sets a com as fav', function(done){
+    request
+      .delete('/api/favs')
+      .send({
+        token: adminToken,
+        comm_id: 'barcelona_tienda'
+      })
+      .expect(200, {
+        "success": true,
+        "message": "Fav removed: barcelona_tienda"
+      }, done);
+  });
+
   it('deletes a comm', function (done) {
     request
-      .delete('/api/comms/Tienda')
+      .delete('/api/comms/barcelona_tienda')
       .send( {token: adminToken } )
       .expect(200, {
         "message": "Commerce removed from the list!"
@@ -164,4 +184,16 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
 
   });
 
+});
+
+describe('SACRIFICE ADMIN USER test@test.com', function() {
+  it('admin deletes a user', function (done) {
+    request
+      .delete('/api/users')
+      .send({
+        token: adminToken,
+        email: 'test@test.com'
+      })
+      .expect(200, {"message": "User removed from our database"}, done);
+  });
 });

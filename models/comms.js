@@ -1,21 +1,33 @@
-var mongoose = require('mongoose');
+var mongoose  = require('mongoose'),
+    Schema    = mongoose.Schema;
 
 // Define our schema
-var CommSchema   = new mongoose.Schema({
+var CommSchema   = new Schema({
   _id: String,
-  description: String,
+  name: { type: String, required: true },
   address: String,
+  location: { type: String, required: true },
+  phone: String,
+  description: String,
   email: String,
   gps: String,
-  phone: String,
   web: String,
   schedule: String,
   activity: String
 });
 
-// Virtual value to match _id as name
-CommSchema.virtual('name').get(function() {
-  return this._id;
+CommSchema.pre('save', function(callback) {
+  var comm = this;
+
+  //if _id is not null, callback
+  if(comm._id != null) return callback();
+
+  var str_name  = (comm.name).replace(/ /g, "-").replace(/\'/g, "").toLowerCase();
+  var str_loc   = (comm.location).replace(/ /g, "-").replace(/\'/g, "").toLowerCase();
+  var str       = (str_loc + "_" + str_name);
+  this._id = str;
+  callback();
+
 });
 
 // Export the Mongoose model

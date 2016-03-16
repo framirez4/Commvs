@@ -17,13 +17,12 @@ exports.authenticate = function(req, res) {
             res.json({ success: false, message: 'Authentication failed. Wrong password.'});
           } else if (isMatch) {
             // if user is found and password is right, create a token
-            if (user.role == 'admin'){
-              console.log('ADMIN USER LOGGED IN');
+            /*if (user.role == 'admin'){
               var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
             } else {
               var token = jwt.sign(user, config.secret.simple_key);
-            }
-
+            }*/
+            var token = jwt.sign(user, config.secret.simple_key);
 
             // return the information including token as JSON
             res.json({
@@ -54,7 +53,6 @@ exports.verifyToken = function(req, res, next) {
       } else {
         // if everything is good, save to request for use in other routes
         req.decoded = decoded;
-        console.log(JSON.stringify(req.decoded._doc.role));
         next();
       }
     });

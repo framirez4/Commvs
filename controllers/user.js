@@ -51,7 +51,7 @@ exports.editPassword = function(req, res) {
     // Update the existing comm quantity
     user.password = req.body.password;
 
-    // Save the beer and check for errors
+    // Save the user and check for errors
     user.save(function(err) {
       if (err && err.errors){
         res.json({success: false, message: err.errors['password'].message});

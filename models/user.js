@@ -1,10 +1,10 @@
 // Load required packages
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt-nodejs');
-
+var mongoose  = require('mongoose'),
+    Schema    = mongoose.Schema;
+var bcrypt    = require('bcrypt-nodejs');
 
 // Define our user schema
-var UserSchema = new mongoose.Schema({
+var UserSchema = new Schema({
   '_id': {
     type: String,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
@@ -18,9 +18,9 @@ var UserSchema = new mongoose.Schema({
     type: String,
     default: 'user'
   },
-  favorites: {
-    type: Array
-  }
+  'favs': [{
+    type: String, unique: true, ref: 'Comm'
+  }]
 });
 
 // Virtual value to match _id as email
