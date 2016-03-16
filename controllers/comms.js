@@ -1,7 +1,7 @@
 // Load packages
-var keygen = require('keygenerator');
 
 var Comm = require('../models/comms');
+//var Ownkey = require('../models/ownkeys');
 
 
 // Create endpoint /api/comms for POSTS
@@ -23,18 +23,16 @@ exports.postComms = function(req, res) {
 
   // Save the commerce and check for errors
   comm.save(function(err) {
-    if (err){
-      res.json({ success: false, error: err });
-    } else {
-      res.json({ success: true, message: 'Commerce added to the list!', data: comm });
-    }
+    if (err) return res.json({ success: false, error: err });
+
+    res.json({ success: true, message: 'Commerce added to the list!', data: comm });
   });
 };
 
 // Create endpoint /api/comms for GET
 exports.getComms = function(req, res) {
   // Use the Commerce model to find all commerces
-  Comm.find(function(err, comms) {
+  Comm.find({}, {ownership: 0}, function(err, comms) {
     if (err) {
       res.send(err);
     } else {
@@ -48,7 +46,7 @@ exports.getComm = function(req, res) {
 
 
   // Use the Commerce model to find a specific commerce
-  Comm.findById(req.params.comm_id, function(err, comms) {
+  Comm.findById(req.params.comm_id, {ownership: 0}, function(err, comms) {
     if (err) {
       res.send(err);
     } else {
@@ -91,11 +89,4 @@ exports.deleteComm = function(req, res) {
 
     }
   });
-};
-
-exports.getOwnerKey = function(req, res) {
-  res.json({ success: true, key: keygen.number() });
-};
-exports.setOwnerKey = function(req, res) {
-  res.json({ message: 'setOnwerKey function directory' });
 };

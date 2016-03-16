@@ -1,5 +1,9 @@
+// Load packages
+var keygen    = require('keygenerator');
 var mongoose  = require('mongoose'),
     Schema    = mongoose.Schema;
+
+//var Ownership = require('./ownershop.js');
 
 // Define our schema
 var CommSchema   = new Schema({
@@ -13,7 +17,19 @@ var CommSchema   = new Schema({
   gps: String,
   web: String,
   schedule: String,
-  activity: String
+  activity: String,
+
+  ownership: {
+    key: {
+      type: Number,
+      unique: true,
+      length: [8, 'The value of key must be {length}']
+    },
+    owners: [{
+      type: String,
+      ref: 'User'
+    }]
+  }
 });
 
 CommSchema.pre('save', function(callback) {
@@ -28,6 +44,12 @@ CommSchema.pre('save', function(callback) {
   this._id = str;
   callback();
 
+});
+// Pre generate a new key for comm
+CommSchema.pre('save', function(callback){
+  if(this.ownership.key != undefined) return callback();
+  this.ownership.key = keygen.number();
+  callback();
 });
 
 // Export the Mongoose model

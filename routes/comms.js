@@ -18,8 +18,4 @@ router.route('/:comm_id')
   .put(authController.verifyToken, user.can('access admin function'), commsController.putComm) // Admin/Owner - update a comm
   .delete(authController.verifyToken, user.can('access admin function'), commsController.deleteComm); // Admin - delete a comm
 
-router.route('/:comm_id/ownerkey')
-  .get(authController.verifyToken, user.can('access admin function'), commsController.getOwnerKey) // Admin - generate an ownership code
-  .post(commsController.setOwnerKey); // Owner - validate an ownership code
-
 module.exports = router;

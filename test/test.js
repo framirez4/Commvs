@@ -3,6 +3,7 @@ var assert = require('assert');
 var request = require('supertest')(myApp);
 var adminToken = '';
 var userToken = '';
+var ownership = undefined;
 
 describe('LOAD EXPRESS APP', function(){
   it('responds to /api', function (done) {
@@ -139,7 +140,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
         done();
       });
   });
-  it('gets a comm', function (done) {
+  it('gets a single comm', function (done) {
     request
       .get('/api/comms/barcelona_tienda')
       .expect(200)
@@ -173,7 +174,90 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
         "message": "Fav removed: barcelona_tienda"
       }, done);
   });
-
+  it('gets a comm ownership key', function(done){
+    request
+      .get('/api/ownership/barcelona_tienda')
+      .send({
+        token: adminToken,
+      })
+      .end(function(err, res){
+        ownership = res.body.ownership.key;
+        if(ownership) done();
+      })
+  });
+  it('gets a wrong comm ownership key', function(done){
+    request
+      .get('/api/ownership/barcelona_t')
+      .send({
+        token: adminToken,
+      })
+      .expect(200, {
+        "success": false,
+        "message": "No comm found"
+      }, done);
+  });
+  it('sets as a comm admin', function(done){
+    request
+      .post('/api/ownership')
+      .send({
+        token: adminToken,
+        key: ownership
+      }).end(function(err, res){
+        request
+          .get('/api/ownership/barcelona_tienda')
+          .send({
+            token: adminToken
+          })
+          .expect(200)
+          .end(function(err, res){
+            assert.equal(res.body.ownership.owners[0] === 'test@test.com', true);
+            done();
+          });
+      });
+  });
+  it('removes as a comm admin', function(done){
+    request
+      .delete('/api/ownership')
+      .send({
+        token: adminToken,
+        key: ownership
+      }).end(function(err, res){
+        request
+          .get('/api/ownership/barcelona_tienda')
+          .send({
+            token: adminToken
+          })
+          .expect(200)
+          .end(function(err, res){
+            assert.equal(res.body.ownership.owners.length == 0, true);
+            done();
+          });
+      });
+  });
+  it('set as admin of a comm with a wrong ownership key', function(done){
+    request
+      .post('/api/ownership')
+      .send({
+        token: adminToken,
+        key: 12345
+      })
+      .expect(200, {
+        "success": false,
+        "message": "Wrong or unexistent ownership key"
+      }, done);
+  });
+  it('removes as admin of a comm with a wrong ownership key', function(done){
+    request
+      .delete('/api/ownership')
+      .send({
+        token: adminToken,
+        key: 12345
+      })
+      .expect(200, {
+        "success": false,
+        "message": "Wrong or unexistent ownership key"
+      }, done);
+  });
   it('deletes a comm', function (done) {
     request
       .delete('/api/comms/barcelona_tienda')
