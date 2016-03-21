@@ -18,6 +18,7 @@ function requireHTTPS(req, res, next){
 
 // ==== MIDDLEWARES ====
 //app.use(morgan('dev'));
+app.use(requireHTTPS);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
