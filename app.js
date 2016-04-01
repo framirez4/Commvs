@@ -9,16 +9,9 @@ var app         = express(); //Create express app
 var config = require('./config');
 mongoose.connect(config.database);  //Connect database
 
-function requireHTTPS(req, res, next){
-  if(!req.secure) {
-    return res.redirect('https://' + req.headers.host + req.url);
-  }
-  next();
-}
 
 // ==== MIDDLEWARES ====
 //app.use(morgan('dev'));
-app.use(requireHTTPS);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
@@ -26,7 +19,7 @@ app.use(helmet());
 
 
 // ==== MOUNT ROUTES ====
-app.use('/api', require('./routes/index'));
+app.use('/', require('./routes/index'));
 
 
 module.exports = app; // export app module
