@@ -1,4 +1,4 @@
-var myApp = require('./servertest.js');
+var myApp = require('../server.js');
 var assert = require('assert');
 var request = require('supertest')(myApp);
 var adminToken = '';
@@ -6,9 +6,9 @@ var userToken = '';
 var ownership = undefined;
 
 describe('LOAD EXPRESS APP', function(){
-  it('responds to /api', function (done) {
+  it('responds to /', function (done) {
     request
-      .get('/api')
+      .get('/')
       .expect(200, done);
   });
   it('404 everything else', function (done) {
@@ -22,7 +22,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
 
   it('creates a wrong user', function (done) {
     request
-      .post('/api/users')
+      .post('/users')
       .send({
         email: 'test',
         password: '123'
@@ -37,7 +37,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
   });
   it('creates a new admin user', function (done) {
     request
-      .post('/api/users')
+      .post('/users')
       .send({
         email: 'test@admin.com',
         password: '1234',
@@ -47,7 +47,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
   });
   it('creates a duplicate user', function (done) {
     request
-      .post('/api/users')
+      .post('/users')
       .send({
         email: 'test@admin.com',
         password: '1234',
@@ -60,7 +60,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
   });
   it('authenticates an admin user', function (done){
     request
-      .post('/api/authenticate')
+      .post('/authenticate')
       .send({
         email: 'test@admin.com',
         password: '1234'
@@ -72,7 +72,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
   });
   it('admin sets a wrong password', function (done) {
     request
-      .put('/api/users')
+      .put('/users')
       .send({
         token: adminToken,
         password: '123'
@@ -85,7 +85,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
   });
   it('admin sets a correct password', function (done) {
     request
-      .put('/api/users')
+      .put('/users')
       .send({
         token: adminToken,
         password: '12345'
@@ -94,7 +94,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
   });
   /*it('deletes an unexistent user', function (done) {
     request
-      .delete('/api/users')
+      .delete('/users')
       .send({
         token: adminToken,
         email: 'test111@admin.com'
@@ -107,7 +107,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
 describe('DO ADMIN-ONLY ACTIONS', function(){
   it('creates a new comm', function (done) {
     request
-      .post('/api/comms')
+      .post('/comms')
       .send({
         "token": adminToken,
         "name": "Tienda",
@@ -128,7 +128,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('cannot create a duplicate comm', function (done) {
     request
-      .post('/api/comms')
+      .post('/comms')
       .send({
         "token": adminToken,
         "name": "Tienda",
@@ -142,7 +142,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('gets a single comm', function (done) {
     request
-      .get('/api/comms/barcelona_tienda')
+      .get('/comms/barcelona_tienda')
       .expect(200)
       .end(function(err, res){
         assert.equal(res.body.hasOwnProperty('_id'), true);
@@ -152,7 +152,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
 
   it('sets a comm as fav', function(done){
     request
-      .post('/api/favs')
+      .post('/favs')
       .send({
         token: adminToken,
         comm_id: 'barcelona_tienda'
@@ -164,7 +164,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('UNsets a com as fav', function(done){
     request
-      .delete('/api/favs')
+      .delete('/favs')
       .send({
         token: adminToken,
         comm_id: 'barcelona_tienda'
@@ -176,7 +176,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('gets a comm ownership key', function(done){
     request
-      .get('/api/ownership/barcelona_tienda')
+      .get('/ownership/barcelona_tienda')
       .send({
         token: adminToken,
       })
@@ -187,7 +187,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('gets a wrong comm ownership key', function(done){
     request
-      .get('/api/ownership/barcelona_t')
+      .get('/ownership/barcelona_t')
       .send({
         token: adminToken,
       })
@@ -198,13 +198,13 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('sets as a comm admin', function(done){
     request
-      .post('/api/ownership')
+      .post('/ownership')
       .send({
         token: adminToken,
         key: ownership
       }).end(function(err, res){
         request
-          .get('/api/ownership/barcelona_tienda')
+          .get('/ownership/barcelona_tienda')
           .send({
             token: adminToken
           })
@@ -217,13 +217,13 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('removes as a comm admin', function(done){
     request
-      .delete('/api/ownership')
+      .delete('/ownership')
       .send({
         token: adminToken,
         key: ownership
       }).end(function(err, res){
         request
-          .get('/api/ownership/barcelona_tienda')
+          .get('/ownership/barcelona_tienda')
           .send({
             token: adminToken
           })
@@ -236,7 +236,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('set as admin of a comm with a wrong ownership key', function(done){
     request
-      .post('/api/ownership')
+      .post('/ownership')
       .send({
         token: adminToken,
         key: 12345
@@ -248,7 +248,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('removes as admin of a comm with a wrong ownership key', function(done){
     request
-      .delete('/api/ownership')
+      .delete('/ownership')
       .send({
         token: adminToken,
         key: 12345
@@ -273,7 +273,7 @@ describe('TEST NORMAL USER test@user.com', function() {
 
   it('creates a new normal user', function (done) {
     request
-      .post('/api/users')
+      .post('/users')
       .send({
         email: 'test@user.com',
         password: '1234'
@@ -283,7 +283,7 @@ describe('TEST NORMAL USER test@user.com', function() {
 
   it('authenticates a normal user', function (done){
     request
-      .post('/api/authenticate')
+      .post('/authenticate')
       .send({
         email: 'test@user.com',
         password: '1234'
@@ -295,7 +295,7 @@ describe('TEST NORMAL USER test@user.com', function() {
   });
   it('user sets a wrong password', function (done) {
     request
-      .put('/api/users')
+      .put('/users')
       .send({
         token: userToken,
         password: '123'
@@ -308,7 +308,7 @@ describe('TEST NORMAL USER test@user.com', function() {
   });
   it('user sets a correct password', function (done) {
     request
-      .put('/api/users')
+      .put('/users')
       .send({
         token: userToken,
         password: '12345'
@@ -321,7 +321,7 @@ describe('TEST NORMAL USER test@user.com', function() {
 describe('DO USER-ONLY ACTIONS', function(){
   it('cannot create a new comm, 403 forbidden', function (done) {
     request
-      .post('/api/comms')
+      .post('/comms')
       .send({
         "token": userToken,
         "name": "Tienda",
@@ -338,14 +338,14 @@ describe('DO USER-ONLY ACTIONS', function(){
   });
   it('cannot delete a comm, 403 forbidden', function (done) {
     request
-      .delete('/api/comms/barcelona_tienda')
+      .delete('/comms/barcelona_tienda')
       .send( {token: userToken } )
       .expect(403, done);
 
   });
   it('gets a single comm', function (done) {
     request
-      .get('/api/comms/barcelona_tienda')
+      .get('/comms/barcelona_tienda')
       .expect(200)
       .end(function(err, res){
         assert.equal(res.body.hasOwnProperty('_id'), true);
@@ -355,7 +355,7 @@ describe('DO USER-ONLY ACTIONS', function(){
 
   it('sets a comm as fav', function(done){
     request
-      .post('/api/favs')
+      .post('/favs')
       .send({
         token: userToken,
         comm_id: 'barcelona_tienda'
@@ -367,7 +367,7 @@ describe('DO USER-ONLY ACTIONS', function(){
   });
   it('UNsets a comm as fav', function(done){
     request
-      .delete('/api/favs')
+      .delete('/favs')
       .send({
         token: userToken,
         comm_id: 'barcelona_tienda'
@@ -380,13 +380,13 @@ describe('DO USER-ONLY ACTIONS', function(){
 
   it('sets as a comm admin', function(done){
     request
-      .post('/api/ownership')
+      .post('/ownership')
       .send({
         token: userToken,
         key: ownership
       }).end(function(err, res){
         request
-          .get('/api/ownership/barcelona_tienda')
+          .get('/ownership/barcelona_tienda')
           .send({
             token: adminToken
           })
@@ -399,13 +399,13 @@ describe('DO USER-ONLY ACTIONS', function(){
   });
   it('removes as a comm admin', function(done){
     request
-      .delete('/api/ownership')
+      .delete('/ownership')
       .send({
         token: userToken,
         key: ownership
       }).end(function(err, res){
         request
-          .get('/api/ownership/barcelona_tienda')
+          .get('/ownership/barcelona_tienda')
           .send({
             token: adminToken
           })
@@ -418,7 +418,7 @@ describe('DO USER-ONLY ACTIONS', function(){
   });
   it('set as admin of a comm with a wrong ownership key', function(done){
     request
-      .post('/api/ownership')
+      .post('/ownership')
       .send({
         token: userToken,
         key: 12345
@@ -430,7 +430,7 @@ describe('DO USER-ONLY ACTIONS', function(){
   });
   it('removes as admin of a comm with a wrong ownership key', function(done){
     request
-      .delete('/api/ownership')
+      .delete('/ownership')
       .send({
         token: userToken,
         key: 12345
@@ -453,7 +453,7 @@ describe('DO USER-ONLY ACTIONS', function(){
 describe('SACRIFICE TIME: USERS AND TEST COMM', function() {
   it('deletes a comm as ADMIN', function (done) {
     request
-      .delete('/api/comms/barcelona_tienda')
+      .delete('/comms/barcelona_tienda')
       .send( {token: adminToken } )
       .expect(200, {
         "message": "Commerce removed from the list!"
@@ -461,7 +461,7 @@ describe('SACRIFICE TIME: USERS AND TEST COMM', function() {
   });
   it('normal user cannot delete ANOTHER USER', function (done) {
     request
-      .delete('/api/users')
+      .delete('/users')
       .send({
         token: userToken,
         email: 'test@admin.com'
@@ -470,7 +470,7 @@ describe('SACRIFICE TIME: USERS AND TEST COMM', function() {
   });
   it('ADMIN deletes himself', function (done) {
     request
-      .delete('/api/users')
+      .delete('/users')
       .send({
         token: adminToken,
         email: 'test@admin.com'
@@ -480,7 +480,7 @@ describe('SACRIFICE TIME: USERS AND TEST COMM', function() {
 
   it('normal user deletes himself', function (done) {
     request
-      .delete('/api/users')
+      .delete('/users')
       .send({
         token: userToken,
         email: 'test@user.com'

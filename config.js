@@ -9,10 +9,5 @@ module.exports = {
       'simple_key': process.env.SECRET || 'secret'
     },
     'database': process.env.DB_HOST || 'mongodb://localhost:27017/commvs',
-    'port': process.env.PORT || 3000,
-    'options': {
-      'key': fs.readFileSync(process.env.OPTIONS_KEY || './keys/key.pem'),
-      'cert': fs.readFileSync(process.env.OPTIONS_CERT || './keys/cert.pem')
-    }
-
+    'port': process.env.PORT || 3000
 };
