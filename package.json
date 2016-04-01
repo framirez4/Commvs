@@ -4,7 +4,7 @@
   "description": "Commerce list",
   "repository": {
     "type": "git",
-    "url" : "https://github.com/framirez4/Commvs"
+    "url": "https://github.com/framirez4/Commvs"
   },
   "main": "server.js",
   "scripts": {
@@ -25,7 +25,6 @@
     "helmet": "^1.1.0",
     "jsonwebtoken": "^5.7.0",
     "keygenerator": "^1.0.4",
-    "letsencrypt": "^1.4.3",
     "mongoose": "^4.4.3",
     "morgan": "^1.7.0"
   },
