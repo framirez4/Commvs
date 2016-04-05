@@ -11,7 +11,7 @@ mongoose.connect(config.database);  //Connect database
 
 
 // ==== MIDDLEWARES ====
-//app.use(morgan('dev'));
+app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());

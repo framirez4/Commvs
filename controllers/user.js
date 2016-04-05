@@ -64,11 +64,8 @@ exports.editPassword = function(req, res) {
 };
 
 exports.deleteUsers = function(req, res) {
-  User.findByIdAndRemove(req.body.email, function(err) {
-    if (err){
-      res.send(err);
-    } else {
-      res.json({ message: 'User removed from our database' });
-    }
+  User.findByIdAndRemove(req.query.email, function(err) {
+    if (err) return res.send(err);
+    res.json({ message: 'User removed from our database' });
   });
 };
