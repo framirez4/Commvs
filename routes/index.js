@@ -15,7 +15,7 @@ router.use('/comms', require('./comms'));
 router.use('/users', require('./user'));
 router.use('/favs',  require('./favs'));
 router.use('/ownership',  require('./ownership'));
-router.route('/authenticate').post(authController.authenticate); // Authenticate any user. Returns a JWT.
+router.use('/authenticate', require('./authenticate')); // Authenticate any user. Returns a JWT.
 
 
 module.exports = router;
