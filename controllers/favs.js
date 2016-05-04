@@ -2,7 +2,7 @@
 var User = require('../models/user');
 var Comm = require('../models/comms');
 
-// Create endpoint /api/users for POST
+// Create endpoint /favs for POST
 exports.postFav = function(req, res) {
 
   User.findByIdAndUpdate(

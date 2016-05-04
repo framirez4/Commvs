@@ -1,6 +1,7 @@
 // Load packages
 
 var Comm = require('../models/comms');
+var User = require('../models/user');
 
 exports.getOwnership = function(req, res) {
 
@@ -17,22 +18,38 @@ exports.getOwnership = function(req, res) {
 };
 exports.setOwnership = function(req, res) {
 
-  Comm.findOneAndUpdate({ "ownership.key": req.body.key },
+  Comm.findOneAndUpdate(
+    { "ownership.key": req.body.key },
     { $addToSet: { "ownership.owners": req.decoded['_doc']['_id']}},
     function(err, comms){
       if(!comms) return res.json({success: false, message: "Wrong or unexistent ownership key"});
-
-      res.json({success: true, message: "Added user "+ req.decoded['_doc']['_id'] +" as admin for ["+ comms.name +"]" });
+      console.log(req.decoded['_doc']['_id']);
+      User.findByIdAndUpdate(
+        req.decoded['_doc']['_id'],
+        { $addToSet: { "owns": comms._id}},
+        function(err, user){
+          if(err) return res.json({ 'success': false, 'message': 'Error saving user' });
+          res.json({success: true, added: comms._id, message: "Added user "+ req.decoded['_doc']['_id'] +" as admin for ["+ comms.name +"]" });
+        }
+      );
     }
   );
 };
 
 exports.removeOwnership = function(req, res) {
-  Comm.findOneAndUpdate({ "ownership.key": req.body.key },
-  { $pull: {"ownership.owners": req.decoded['_doc']['_id']}},
-  function(err, comms) {
-    if(!comms) return res.json({success: false, message: "Wrong or unexistent ownership key"});
-
-    res.json({success: true, message: "Removed user "+ req.decoded['_doc']['_id'] +" as admin for ["+ comms.name +"]" });
-  });
+  Comm.findByIdAndUpdate(
+    req.query.comm_id,
+    { $pull: {"ownership.owners": req.decoded['_doc']['_id']}},
+    function(err, comms) {
+      if(!comms) return res.json({success: false, message: "Wrong or unexistent ownership key"});
+      User.findByIdAndUpdate(
+        req.decoded['_doc']['_id'],
+        { $pull: {"owns": comms._id } },
+        function(err, user){
+          if (err) return res.json({ success: false, message: err });
+          res.json({success: true, removed: comms._id, message: "Removed user "+ req.decoded['_doc']['_id'] +" as admin for ["+ comms.name +"]" });
+        }
+      );
+    }
+  );
 };

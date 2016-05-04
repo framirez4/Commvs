@@ -20,6 +20,9 @@ var UserSchema = new Schema({
   },
   'favs': [{
     type: String, unique: true, ref: 'Comm'
+  }],
+  'owns': [{
+    type: String, unique: true, ref: 'Comm'
   }]
 });
 

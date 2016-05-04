@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var dotenv = require('dotenv').config(); // Load .env config.
+var dotenv = require('dotenv').config({path: __dirname +'/.env'}); // Load .env config.
 
 
 module.exports = {

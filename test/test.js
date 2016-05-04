@@ -55,7 +55,7 @@ describe('TEST ADMIN USER test@admin.com', function() {
       })
       .expect(200, {
         "success": false,
-        "message": "E11000 duplicate key error index: commvs.users.$_id_ dup key: { : \"test@admin.com\" }"
+        "message": "E11000 duplicate key error collection: kapeloi.users index: _id_ dup key: { : \"test@admin.com\" }"
       }, done);
   });
   it('authenticates an admin user', function (done){
