@@ -3,21 +3,22 @@
 var Comm = require('../models/comms');
 var User = require('../models/user');
 
+// Get only the comm ownership object
 exports.getOwnership = function(req, res) {
-
   // Use the Commerce model to find a specific commerce
   Comm.findById(req.params.comm_id, function(err, comms) {
     if(!comms) return res.json({success: false, message: "No comm found"});
-
     res.json({
+      id: comms._id,
       name: comms.name,
       ownership: comms.ownership
     })
 
   });
 };
-exports.setOwnership = function(req, res) {
 
+
+exports.setOwnership = function(req, res) {
   Comm.findOneAndUpdate(
     { "ownership.key": req.body.key },
     { $addToSet: { "ownership.owners": req.decoded['_doc']['_id']}},

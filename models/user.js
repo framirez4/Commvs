@@ -9,6 +9,14 @@ var UserSchema = new Schema({
     type: String,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
   },
+  'first_name': {
+    type: String,
+    required: true
+  },
+  'last_name': {
+    type: String,
+    required: true
+  },
   'password': {
     type: String,
     required: true,
@@ -32,20 +40,20 @@ UserSchema.virtual('email').get(function() {
 });
 
 // Execute before each user.save() call
-UserSchema.pre('save', function(callback) {
+UserSchema.pre('save', function(next) {
   var user = this;
 
   // Break out if the password hasn't changed
-  if (!user.isModified('password')) return callback();
+  if (!user.isModified('password')) return next();
 
   // Password changed so we need to hash it
   bcrypt.genSalt(5, function(err, salt) {
-    if (err) return callback(err);
+    if (err) return next(err);
 
     bcrypt.hash(user.password, salt, null, function(err, hash) {
       if (err) return callback(err);
       user.password = hash;
-      callback();
+      next();
     });
   });
 });

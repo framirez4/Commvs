@@ -7,7 +7,7 @@ exports.postFav = function(req, res) {
 
   User.findByIdAndUpdate(
     req.decoded['_doc']['_id'],
-    {$addToSet: { favs: req.body.comm_id }},
+    {$addToSet: { favs: req.params.comm_id }},
     function(err, user) {
       if (err){
         res.json({ success: false, err });
@@ -21,7 +21,7 @@ exports.postFav = function(req, res) {
 exports.deleteFav = function(req, res) {
   User.findByIdAndUpdate(
     req.decoded['_doc']['_id'],
-    { $pull: { favs: req.query.comm_id }},
+    { $pull: { favs: req.params.comm_id }},
     function(err, user) {
       if (err){
         res.json({ success: false, err });

@@ -19,7 +19,7 @@ app.use(helmet());
 
 
 // ==== MOUNT ROUTES ====
-app.use('/', require('./routes/index'));
+app.use('/v1', require('./routes/index'));
 
 
 module.exports = app; // export app module

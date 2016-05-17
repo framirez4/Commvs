@@ -2,29 +2,31 @@ var jwt     = require('jsonwebtoken');
 var config  = require('../config');
 var User    = require('../models/user');
 
+/**
+ * Authenticate a user
+ * @param  {object} req Reads req.body.email and req.body.password
+ * @param  {object} res
+ * @return {object}     {success, message, token}
+ */
 exports.authenticate = function(req, res) {
+ /* Get req.body parameters
+  * email / password
+  */
   User.findOne({ '_id': req.body.email }, function (err, user) {
     if(err){ return err }
     else {
-            // No user found with that username
-      if (!user) {
-        res.json({ success: false, message: 'Authentication failed. User not found.' });
-      }
+      // No user found with that username
+      if (!user) return res.json({ success: false, message: 'Authentication failed. User not found.' });
       else if (user) {
         // Make sure the password is correct
         user.verifyPassword(req.body.password, function(err, isMatch) {
-        if(!isMatch) return res.json({ success: false, message: 'Authentication failed. Wrong password.'});
+          if(!isMatch) return res.json({ success: false, message: 'Authentication failed. Wrong password.'});
 
-          // Remove password hash from object
-          user.password = undefined;
-
-          // if user is found and password is right, create a token
-          /*if (user.role == 'admin'){
+          // Limit the use time for an admin-token
+          if (user.role == 'admin')
             var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
-          } else {
+          else
             var token = jwt.sign(user, config.secret.simple_key);
-          }*/
-          var token = jwt.sign(user, config.secret.simple_key);
 
           // return the information including token as JSON
           res.json({
@@ -39,6 +41,14 @@ exports.authenticate = function(req, res) {
 };
 
 // route middleware to verify a token
+
+/**
+ * Route middleware to verify a token
+ * @param  {Object}   req  Reads req.body.token, req.query.token, req.headers[x-access-token]
+ * @param  {Object}   res
+ * @param  {Function} next Callback to use the next middleware
+ * @return {Object}        {success, message} if failed on verify, otherwise it goes on.
+ */
 exports.verifyToken = function(req, res, next) {
 
   // check header or url parameters or post parameters for token

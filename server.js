@@ -7,7 +7,7 @@ app.set('trust proxy', 'loopback');
 
 // Start the server
 var server = app.listen(config.port, function(){
-  console.log('Starting Commvs server on port ' + config.port);
+  console.log('Starting Kapeloi-server on port ' + config.port);
 });
 
 module.exports = server;

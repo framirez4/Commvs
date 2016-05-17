@@ -7,7 +7,9 @@ var router = require('express').Router(); //create router
 
 //Teset root route
 router.get('/', function(req, res) {
-  res.json({ message: 'Commvs api root directory' });
+  res.json({ message: 'Kapeloi root directory for API v1. More info at Github repository.',
+             repository: 'htttps://github.com/framirez4/kapeloi-server'
+           });
 });
 
 //Main mounted routes
