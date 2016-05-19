@@ -1,14 +1,23 @@
 // Load packages
 
 var Comm = require('../models/comms');
+var User = require('../models/user');
 //var Ownkey = require('../models/ownkeys');
 
 
-// Create endpoint /api/comms for POSTS
+
+/**
+ * Create endpoint to add a new Comm
+ * @param  {Object} req reads token from header, only admins can insert.
+ * From body: name, address, location, phone, description, email, gps, web, schedule, activity
+ * ID is built automatically from location_name
+ * @param  {Object} res
+ * @return {Object}     {success, message, data}
+ */
 exports.postComms = function(req, res) {
   // Create a new instance of the Commerce model
   var comm = Comm({
-      // Set the commerce properties that came from the POST data
+    // Set the commerce properties that came from the POST data
     name: req.body.name,
     address: req.body.address,
     location: req.body.location,
@@ -29,7 +38,12 @@ exports.postComms = function(req, res) {
   });
 };
 
-// Create endpoint /api/comms for GET
+/**
+ * Create endpoint to get all comms. Needs refactor to paginate
+ * @param  {Object} req
+ * @param  {Object} res
+ * @return {Array}     [{Comm}]
+ */
 exports.getComms = function(req, res) {
   // Use the Commerce model to find all commerces
   Comm.find({}, {ownership: 0}, function(err, comms) {
@@ -41,52 +55,89 @@ exports.getComms = function(req, res) {
   });
 };
 
-// Create endpoint /api/comms/:name for GET_byId
+/**
+ * Entpoint to get a Comm by its ID
+ * @param  {Object} req read req.params.comm_id
+ * @param  {Object} res
+ * @return {Object}     {Comm}
+ */
 exports.getComm = function(req, res) {
-
-
   // Use the Commerce model to find a specific commerce
   Comm.findById(req.params.comm_id, {ownership: 0}, function(err, comms) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(comms);
-    }
+    if (err) return res.send(err);
+    if (!comms) return res.json({ message: 'Commerce not found' });
+    res.json(comms);
   });
 };
 
-// Create endpoint /api/comms/:comm_id for PUT_byId
-exports.putComm = function(req, num, raw) {
-
+/**
+ * Endpoint to update a comm by its ID
+ * @param  {Object} req Read new data from req.body
+ * @param  {Object} res
+ * @return {Object}     {New comm data}
+ */
+exports.putComm = function(req, res) {
   // Use the Commerce model to find a specific commerce
-  Comm.findById(req.params.comm_id, function(err, comms) {
-    if (err){
-      res.send(err);
-    }
-    // Update the existing comm quantity
-    comms.name = req.body.name;
+  if (req.body.hasOwnProperty('_id')) delete req.body._id
+  if (req.body.hasOwnProperty('ownership')) delete req.body.ownership
 
-    // Save the comm and check for errors
-    comms.save(function(err) {
-      if (err) {
-        res.send(err);
-      } else {
-        res.json(comms);
+  Comm.update(
+    { _id: req.params.comm_id },
+    req.body,
+    function(err, modified){
+      if (err) return res.send(err);
+      if (modified.nModified == 0) {
+        return res.json(
+          {
+            success: true,
+            message: 'No Commerce data was modified'
+          }
+        );
       }
-    });
-  });
+      else {
+        return res.json(
+          {
+            success: true,
+            message: 'Commerce data updated successfully'
+          }
+        );
+      }
+    }
+  );
 };
 
-// Create endpoint /api/comms/:comm_id for DELETE_byId
+/**
+ * Endpoint to delete a commerce
+ * @param  {Object} req req.params.comm_id to delete
+ * @param  {Object} res
+ * @return {Object}     {success,message}
+ */
 exports.deleteComm = function(req, res) {
+  Comm.findById(
+    req.params.comm_id,
+    function ( err, comm ) {
+      if (!comm) return res.json({ success: false, message: 'Commerce not found'});
+        // Use the Comm model to find a specific comm and remove it
+        Comm.findByIdAndRemove(comm._id, function(err) {
+          if (err){
+            res.send(err);
+          } else {
 
-  // Use the Comm model to find a specific comm and remove it
-  Comm.findByIdAndRemove(req.params.comm_id, function(err) {
-    if (err){
-      res.send(err);
-    } else {
-      res.json({ message: 'Commerce removed from the list!' });
+            // If the Comm is found
+            User.update(
+              { $pull: { owns: comm._id }},
+              function(err, user) {
+                if (err) return res.json({ success: false, message: err });
+                res.json({ success: true, removed: comm._id, message: 'Commerce removed and all its admins' });
 
+              }
+            );
+
+          //Will delete all the promos associated to this commerce too.
+
+          }
+        });
     }
-  });
+  )
+
 };
