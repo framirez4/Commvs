@@ -4,6 +4,7 @@ var Comm = require('../models/comms');
 var User = require('../models/user');
 
 // Get only the comm ownership object
+
 exports.getOwnership = function(req, res) {
   // Use the Commerce model to find a specific commerce
   Comm.findById(req.params.comm_id, function(err, comms) {
@@ -19,30 +20,34 @@ exports.getOwnership = function(req, res) {
 
 
 exports.setOwnership = function(req, res) {
-  Comm.findOneAndUpdate(
-    { "ownership.key": req.body.key },
-    { $addToSet: { "ownership.owners": req.decoded['_doc']['_id']}},
-    function(err, comms){
-      if(!comms) return res.json({success: false, message: "Wrong or unexistent ownership key"});
-      console.log(req.decoded['_doc']['_id']);
-      User.findByIdAndUpdate(
-        req.decoded['_doc']['_id'],
-        { $addToSet: { "owns": comms._id}},
-        function(err, user){
-          if(err) return res.json({ 'success': false, 'message': 'Error saving user' });
-          res.json({success: true, added: comms._id, message: "Added user "+ req.decoded['_doc']['_id'] +" as admin for ["+ comms.name +"]" });
+  Comm.findById(
+    req.params.comm_id,
+    function ( err, comm ){
+      if ( !comm ) return res.json({ success: false, message: "Commerce could not be found" });
+      if ( comm.ownership.key == req.body.key ) {
+        if ( comm.ownership.owners.indexOf(req.decoded['_doc']['_id']) < 0 ) {
+          comm.ownership.owners.push(req.decoded['_doc']['_id']);
+          comm.save();
+          User.findByIdAndUpdate(
+            req.decoded['_doc']['_id'],
+            { $addToSet: { "owns": comm._id}},
+            function(err, user){
+              if(err) return res.json({ 'success': false, 'message': 'Error saving user' });
+              res.json({success: true, added: comm._id, message: "Added user "+ req.decoded['_doc']['_id'] +" as admin for ["+ comm.name +"]" });
+            }
+          );
         }
-      );
+      }
     }
   );
 };
 
 exports.removeOwnership = function(req, res) {
   Comm.findByIdAndUpdate(
-    req.query.comm_id,
+    req.params.comm_id,
     { $pull: {"ownership.owners": req.decoded['_doc']['_id']}},
     function(err, comms) {
-      if(!comms) return res.json({success: false, message: "Wrong or unexistent ownership key"});
+      if(!comms) return res.json({success: false, message: "Commerce could not be found"});
       User.findByIdAndUpdate(
         req.decoded['_doc']['_id'],
         { $pull: {"owns": comms._id } },

@@ -122,10 +122,11 @@ exports.deleteComm = function(req, res) {
           if (err){
             res.send(err);
           } else {
-
             // If the Comm is found
             User.update(
+              {owns: comm._id},
               { $pull: { owns: comm._id }},
+              {multi: true},
               function(err, user) {
                 if (err) return res.json({ success: false, message: err });
                 res.json({ success: true, removed: comm._id, message: 'Commerce removed and all its admins' });
