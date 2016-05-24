@@ -18,7 +18,19 @@ var CommSchema   = new Schema({
   web: String,
   schedule: String,
   activity: String,
-
+  promos: [{
+    name: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String
+    },
+    valid: {
+      start: { type: Date, required: true, default: Date.now },
+      end: { type: Date, required: true}
+    }
+  }],
   ownership: {
     key: {
       type: Number,

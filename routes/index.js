@@ -14,10 +14,11 @@ router.get('/', function(req, res) {
 
 //Main mounted routes
 router.use('/comms', require('./comms'));
+router.use('/promos', require('./promos'));
 router.use('/users', require('./user'));
 router.use('/favs',  require('./favs'));
 router.use('/ownership',  require('./ownership'));
 router.use('/authenticate', require('./authenticate')); // Authenticate any user. Returns a JWT.
-
+router.use('/search', require('./search'));
 
 module.exports = router;
