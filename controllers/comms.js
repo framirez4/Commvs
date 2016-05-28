@@ -34,7 +34,7 @@ exports.postComms = function(req, res) {
   comm.save(function(err) {
     if (err) return res.json({ success: false, error: err });
 
-    res.json({ success: true, message: 'Commerce added to the list!', data: comm });
+    res.json({ success: true, message: { en: 'Commerce added to the list!', es: 'Comercio añadido a la lista!' }, data: comm });
   });
 };
 
@@ -47,11 +47,9 @@ exports.postComms = function(req, res) {
 exports.getComms = function(req, res) {
   // Use the Commerce model to find all commerces
   Comm.find({}, {ownership: 0}, function(err, comms) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(comms);
-    }
+    if (err) return res.send(err);
+    res.json(comms);
+
   });
 };
 
@@ -65,7 +63,7 @@ exports.getComm = function(req, res) {
   // Use the Commerce model to find a specific commerce
   Comm.findById(req.params.comm_id, {ownership: 0}, function(err, comms) {
     if (err) return res.send(err);
-    if (!comms) return res.json({ message: 'Commerce not found' });
+    if (!comms) return res.json({ success: false, message: {en: "Commerce could not be found", es: "No se ha podido encontrar el comercio"} });
     res.json(comms);
   });
 };
@@ -90,7 +88,10 @@ exports.putComm = function(req, res) {
         return res.json(
           {
             success: true,
-            message: 'No Commerce data was modified'
+            message: {
+              en: 'No Commerce data was modified',
+              es: 'No se han modificado los datos del comercio'
+            }
           }
         );
       }
@@ -98,7 +99,10 @@ exports.putComm = function(req, res) {
         return res.json(
           {
             success: true,
-            message: 'Commerce data updated successfully'
+            message: {
+              en: 'Commerce data updated successfully',
+              es: 'Los datos del comercio se han actualizado correctamente'
+            }
           }
         );
       }
@@ -116,7 +120,7 @@ exports.deleteComm = function(req, res) {
   Comm.findById(
     req.params.comm_id,
     function ( err, comm ) {
-      if (!comm) return res.json({ success: false, message: 'Commerce not found'});
+      if (!comm) return res.json({ success: false, message: {en: "Commerce could not be found", es: "No se ha podido encontrar el comercio"} });
         // Use the Comm model to find a specific comm and remove it
         Comm.findByIdAndRemove(comm._id, function(err) {
           if (err){
@@ -129,7 +133,7 @@ exports.deleteComm = function(req, res) {
               {multi: true},
               function(err, user) {
                 if (err) return res.json({ success: false, message: err });
-                res.json({ success: true, removed: comm._id, message: 'Commerce removed and all its admins' });
+                res.json({ success: true, removed: comm._id, message: { en: 'Commerce removed and all its admins', es: 'Comercio eliminado y todos sus administradores' } });
 
               }
             );

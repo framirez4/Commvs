@@ -14,13 +14,13 @@ exports.postFav = function(req, res) {
   Comm.findOne(
     {_id: req.params.comm_id},
     function (err, comm) {
-      if (!comm) return res.json({success: false, message: 'Commerce to add not found'});
+      if (!comm) return res.json({success: false, message: {en: "Commerce could not be found", es: "No se ha podido encontrar el comercio"}});
       User.findByIdAndUpdate(
         req.decoded['_doc']['_id'],
         {$addToSet: { favs: comm._id }},
         function(err, user) {
           if (err) return res.json({ success: false, err });
-          res.json({ success: true, added: comm._id, message: 'Fav added: ' + comm.name + ' ('+comm._id+')' });
+          res.json({ success: true, added: comm._id, message: {en: 'Fav added: ' + comm.name + ' ('+comm._id+')' , es: 'Favorito añadido: ' + comm.name + ' ('+comm._id+')' } });
         }
       );
     }
@@ -40,7 +40,7 @@ exports.deleteFav = function(req, res) {
     { $pull: { favs: req.params.comm_id }},
     function(err, user) {
       if (err) return res.json({ success: false, err });
-      res.json({ success: true, removed: req.params.comm_id, message: 'Commerce removed from favorites' });
+      res.json({ success: true, removed: req.params.comm_id, message: { en: 'Commerce removed from favorites', es: 'Comercio eliminado de favoritos'} });
 
     }
   );

@@ -9,9 +9,6 @@ var User    = require('../models/user');
  * @return {object}     {success, message, token}
  */
 exports.authenticate = function(req, res) {
- /* Get req.body parameters
-  * email / password
-  */
   User.findOne({ '_id': req.body.email }, function (err, user) {
     if(err){ return err }
     else {
@@ -26,7 +23,7 @@ exports.authenticate = function(req, res) {
           if (user.role == 'admin')
             var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
           else
-            var token = jwt.sign(user, config.secret.simple_key);
+            var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "7d" });
 
           // return the information including token as JSON
           res.json({
@@ -40,7 +37,32 @@ exports.authenticate = function(req, res) {
   });
 };
 
-// route middleware to verify a token
+/**
+ * Endpoint to update the token for a new one before it expiresIn
+ * @param  {Object} req reads the header to get the (still) valid token and save it to req.decoded._doc
+ * @param  {Object} res
+ * @return {Object}     Returns a brand new fresh JWT. { success, message, token }
+ */
+exports.refreshToken = function(req, res) {
+  User.findById(
+    req.decoded._doc._id,
+    function( err, user ){
+      if(req.decoded._doc.password !== user.password) return res.json({success: false, message: 'Token refresh was revoked'})
+
+      if (user.role == 'admin')
+        var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
+      else
+        var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "7d" });
+
+      // return the information including token as JSON
+      res.json({
+        success: true,
+        message: 'Enjoy your token!',
+        token: token
+      });
+    }
+  )
+};
 
 /**
  * Route middleware to verify a token

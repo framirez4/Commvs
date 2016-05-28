@@ -14,9 +14,9 @@ router.route('/')
 
 
 router.route('/:comm_id')
-  .post(authController.verifyToken, user.can('access admin function'), promosController.postPromo) // Owner - Post a new promo
-  .get(promosController.getPromo) // Get info of a comm
-  .put(authController.verifyToken, user.can('access admin function'), promosController.putPromo) // Owner - update a promo
-  .delete(authController.verifyToken, user.can('access admin function'), promosController.deletePromo); // Owner - delete a promo
+  .post(authController.verifyToken, user.can('update an owned comm data'), promosController.postPromo) // Owner - Post a new promo
+  .get(promosController.getPromo) // Get promos of a comm - Allowed for everyone
+  .put(authController.verifyToken, user.can('update an owned comm data'), promosController.putPromo) // Owner - update a promo
+  .delete(authController.verifyToken, user.can('update an owned comm data'), promosController.deletePromo); // Owner - delete a promo
 
 module.exports = router;

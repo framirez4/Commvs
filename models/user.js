@@ -20,7 +20,7 @@ var UserSchema = new Schema({
   'password': {
     type: String,
     required: true,
-    minlength: [4, 'The value of {PATH} `{VALUE}` is shorter than the minimum allowed length ({MINLENGTH}).']
+    minlength: [6, 'The value of {PATH} is shorter than the minimum allowed length ({MINLENGTH}).']
   },
   'role': {
     type: String,

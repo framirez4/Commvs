@@ -1,4 +1,7 @@
 var connectRoles = require('connect-roles');
+var Comm = require('../models/comms');
+var User = require('../models/user');
+
 
 var user = new connectRoles({
   failureHandler: function (req, res, action) {
@@ -12,14 +15,19 @@ var user = new connectRoles({
   }
 });
 
-user.use('access admin function', function (req) {
+// Allow access to admins to admin-only functions
+user.use('run admin-only functions', function (req) {
   if (req.decoded._doc.role === 'admin') {
     return true;
   }
 });
-user.use('admin or owner', function (req) {
-  if (req.decoded._doc.role === 'admin' || req.decoded._doc._id === req.body.email) {
+
+// Allow access to admins or commerce owners to edit data.
+user.use('update an owned comm data', function (req) {
+  if (req.decoded._doc.role === 'admin') {
     return true;
+  } else {
+    if(req.decoded._doc.owns.indexOf(req.params.comm_id) > -1) return true;
   }
 });
 

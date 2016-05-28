@@ -21,15 +21,33 @@ exports.postUsers = function(req, res) {
       if(err.errmsg) return res.json({ success: false, message: err.errmsg });
       else
         if(err.errors){
-          errors = [];
-          if(err.errors['_id']){errors.push(err.errors['_id'].message)};
-          if(err.errors['password']){errors.push(err.errors['password'].message)};
+          errors = {};
+          if(err.errors['first_name']) {
+            errors.first_name = {};
+            errors.first_name.message = err.errors['first_name'].message;
+            errors.first_name.type = err.errors['first_name'].properties.type;
+          };
+          if(err.errors['last_name']) {
+            errors.last_name = {};
+            errors.last_name.message = err.errors['last_name'].message;
+            errors.last_name.type = err.errors['last_name'].properties.type;
+          };
+          if(err.errors['_id']) {
+            errors.id = {};
+            errors.id.message = err.errors['_id'].message;
+            errors.id.type = err.errors['_id'].properties.type;
+          };
+          if(err.errors['password']) {
+            errors.password = {};
+            errors.password.message = err.errors['password'].message;
+            errors.password.type = err.errors['password'].properties.type;
+          };
 
           return res.json({ success: false, message: errors });
         }
 
     } else {
-      return res.json({ success: true, message: 'New user added!' });
+      return res.json({ success: true, message: {en: 'New user added!', es: 'Nuevo usuario añadido!'} });
     }
   });
 };
@@ -43,9 +61,7 @@ exports.postUsers = function(req, res) {
  */
 exports.getUsers = function(req, res) {
   User.find(function(err, users) {
-    if (err)
-      res.send(err);
-
+    if (err) return res.send(err);
     res.json(users);
   });
 };
@@ -72,12 +88,18 @@ exports.editUser = function(req, res) {
       if (modified.nModified == 0)
         return res.json(
           { success: true,
-            message: 'No profile data was modified'
+            message: {
+              en: 'No profile data was modified',
+              es: 'Ningún dato del perfil ha sido modificado'
+            }
           });
       else
         return res.json(
           { success: true,
-            message: 'User profile updated successfully'
+            message: {
+              en: 'User profile updated successfully',
+              es: 'Los datos del perfil se han actualizado correctamente'
+            }
           });
     }
   )
@@ -98,7 +120,13 @@ exports.editPassword = function(req, res) {
     // Save the user and check for errors
     user.save(function(err) {
       if (err && err.errors) return res.json({success: false, message: err.errors['password'].message});
-      res.json({success:true, message: 'Password successfully changed'});
+      res.json(
+        { success:true,
+          message: {
+            en: 'Password successfully changed',
+            es: 'La contraseña se ha cambiado correctamente'
+          }
+        });
 
     });
   });
@@ -119,7 +147,13 @@ exports.deleteUsers = function(req, res) {
 
       User.findByIdAndRemove(user._id, function(err) {
         if (err) return res.send(err);
-        res.json({success:true, message: 'User removed from our database' });
+        res.json(
+          { success:true,
+            message: {
+              en: 'User removed from our database',
+              es: 'Usuario eliminado de nuestra base de datos'
+            }
+          });
       });
     }
   )
