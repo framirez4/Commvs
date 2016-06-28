@@ -44,6 +44,7 @@ exports.authenticate = function(req, res) {
  * @return {Object}     Returns a brand new fresh JWT. { success, message, token }
  */
 exports.refreshToken = function(req, res) {
+  console.log('OOOOOOOOOOOOMGGGGGGGGGGGGGGGGGGGG' + req.body.token);
   User.findById(
     req.decoded._doc._id,
     function( err, user ){

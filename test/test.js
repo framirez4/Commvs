@@ -1,14 +1,16 @@
 var myApp = require('../server.js');
+var should = require('should');
 var assert = require('assert');
 var request = require('supertest')(myApp);
-var adminToken = '';
+var adminToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwiZ2V0dGVycyI6e30sIndhc1BvcHVsYXRlZCI6ZmFsc2UsImFjdGl2ZVBhdGhzIjp7InBhdGhzIjp7InBhc3N3b3JkIjoibW9kaWZ5Iiwicm9sZSI6ImluaXQiLCJmYXZzIjoiaW5pdCIsIl9fdiI6ImluaXQiLCJfaWQiOiJpbml0In0sInN0YXRlcyI6eyJpZ25vcmUiOnt9LCJkZWZhdWx0Ijp7fSwiaW5pdCI6eyJfX3YiOnRydWUsInJvbGUiOnRydWUsImZhdnMiOnRydWUsIl9pZCI6dHJ1ZX0sIm1vZGlmeSI6eyJwYXNzd29yZCI6dHJ1ZX0sInJlcXVpcmUiOnt9fSwic3RhdGVOYW1lcyI6WyJyZXF1aXJlIiwibW9kaWZ5IiwiaW5pdCIsImRlZmF1bHQiLCJpZ25vcmUiXX0sImVtaXR0ZXIiOnsiZG9tYWluIjpudWxsLCJfZXZlbnRzIjp7fSwiX2V2ZW50c0NvdW50IjowLCJfbWF4TGlzdGVuZXJzIjowfX0sImlzTmV3IjpmYWxzZSwiX2RvYyI6eyJyb2xlIjoiYWRtaW4iLCJmYXZzIjpbImJpZ3Vlc19lc3NlbmNpYWwiLCJiaWd1ZXNfY2hpbm8iXSwiX192IjowLCJfaWQiOiJmcmFuY2VzY3JhbWlyZXpAZ21haWwuY29tIn0sIl9wcmVzIjp7IiRfX29yaWdpbmFsX3NhdmUiOltudWxsLG51bGwsbnVsbF19LCJfcG9zdHMiOnsiJF9fb3JpZ2luYWxfc2F2ZSI6W119LCJpYXQiOjE0NjIyNzA3MjF9.o5MMhNhOhnADwwmWjXkhfNWiDA1JFp0DuvR9QBclaCk';
 var userToken = '';
 var ownership = undefined;
+var rootDir = '/v1';
 
 describe('LOAD EXPRESS APP', function(){
   it('responds to /', function (done) {
     request
-      .get('/')
+      .get(rootDir)
       .expect(200, done);
   });
   it('404 everything else', function (done) {
@@ -18,96 +20,231 @@ describe('LOAD EXPRESS APP', function(){
   });
 });
 
-describe('TEST ADMIN USER test@admin.com', function() {
 
-  it('creates a wrong user', function (done) {
-    request
-      .post('/users')
-      .send({
+describe('User creation functions', function() {
+
+  var creationTests = [
+    {
+      description: 'a wrong user',
+      args: {
         email: 'test',
-        password: '123'
-      })
-      .expect(200, {
+        first_name: 'test',
+        last_name: 'admin',
+        password: '1234'
+      },
+      expected: {
         "success": false,
-        "message": [
-          "Please fill a valid email address",
-          "The value of password `123` is shorter than the minimum allowed length (4)."
-        ]
-      }, done);
-  });
-  it('creates a new admin user', function (done) {
-    request
-      .post('/users')
-      .send({
+        "message": {
+          "id": {
+            "message": "Please fill a valid email address",
+            "type": "regexp"
+          },
+          "password": {
+            "message": "The value of password is shorter than the minimum allowed length (6).",
+            "type": "minlength"
+          }
+        }
+      }
+    },
+    {
+      description: 'a nameless user',
+      args: {
         email: 'test@admin.com',
-        password: '1234',
-        role: 'admin'
-      })
-      .expect(200, {"success":true,"message":"New user added!"}, done);
-  });
-  it('creates a duplicate user', function (done) {
-    request
-      .post('/users')
-      .send({
-        email: 'test@admin.com',
-        password: '1234',
-        role: 'admin'
-      })
-      .expect(200, {
+        password: '123456'
+      },
+      expected: {
         "success": false,
-        "message": "E11000 duplicate key error collection: kapeloi.users index: _id_ dup key: { : \"test@admin.com\" }"
-      }, done);
+        "message": {
+          "first_name": {
+            "message": "Path `first_name` is required.",
+            "type": "required"
+          },
+          "last_name": {
+            "message": "Path `last_name` is required.",
+            "type": "required"
+          }
+        }
+      }
+    },
+    {
+      description: 'an admin user',
+      args: {
+        email: 'test@admin.com',
+        first_name: 'test',
+        last_name: 'admin',
+        password: '123456',
+        role: 'admin'
+      },
+      expected: {
+        "success": true,
+        "message": {
+          "en": "New user added!",
+          "es": "Nuevo usuario añadido!"
+        }
+      }
+    },
+    {
+      description: 'a normal user',
+      args: {
+        email: 'test@user.com',
+        first_name: 'test',
+        last_name: 'user',
+        password: '123456'
+      },
+      expected: {
+        "success": true,
+        "message": {
+          "en": "New user added!",
+          "es": "Nuevo usuario añadido!"
+        }
+      }
+    },
+    {
+      description: 'a repeated user',
+      args: {
+        email: 'test@user.com',
+        first_name: 'test',
+        last_name: 'user',
+        password: '123456'
+      },
+      expected: {
+        "success": false,
+        "message": "E11000 duplicate key error collection: kapeloi.users index: _id_ dup key: { : \"test@user.com\" }"
+      }
+    }
+  ];
+
+  creationTests.forEach(function(test){
+    it('Creates ' + test.description, function(done){
+      request
+        .post(rootDir + '/users')
+        .send(test.args)
+        .expect(200, test.expected, done);
+    })
   });
-  it('authenticates an admin user', function (done){
-    request
-      .post('/authenticate')
-      .send({
+});
+
+describe('User authentication process', function(){
+  var authTests = [
+    {
+      description: 'a wrong user',
+      args: {
+        email: 'test@admin',
+        password: '1234'
+      },
+      expected: {
+        "success": false,
+        "message": "Authentication failed. User not found."
+      }
+    },
+    {
+      description: 'a wrong password',
+      args: {
         email: 'test@admin.com',
         password: '1234'
-      })
-      .end(function(err, res){
-        adminToken = res.body.token;
-        done();
-      })
-  });
-  it('admin sets a wrong password', function (done) {
-    request
-      .put('/users')
-      .send({
-        token: adminToken,
-        password: '123'
-      })
-      .expect(200, {
-        "success": false,
-        "message": "The value of password `123` is shorter than the minimum allowed length (4)."
       },
-      done);
+      expected: {
+        "success": false,
+        "message": "Authentication failed. Wrong password."
+      }
+    },
+    {
+      description: 'admin user and get token',
+      args: {
+        email: 'test@admin.com',
+        password: '123456'
+      },
+      expected: ''
+    },
+    {
+      description: 'normal user and get token',
+      args: {
+        email: 'test@user.com',
+        password: '123456'
+      },
+      expected: ''
+    }
+  ];
+
+  authTests.forEach(function(test){
+    it('Authenticates ' + test.description, function (done){
+      request
+        .post(rootDir + '/authenticate')
+        .send(test.args)
+        .end(function(err, res){
+          if(res.body.success === false){
+            res.body.should.have.property('message');
+            should.equal(res.body.message, test.expected.message)
+            done();
+          } else if(res.body.success === true){
+            res.body.should.have.property('token');
+            done();
+          }
+        })
+    });
   });
-  it('admin sets a correct password', function (done) {
-    request
-      .put('/users')
-      .send({
-        token: adminToken,
-        password: '12345'
-      })
-      .expect(200, {success:true, message: 'Password successfully changed'}, done)
-  });
-  /*it('deletes an unexistent user', function (done) {
-    request
-      .delete('/users')
-      .send({
-        token: adminToken,
-        email: 'test111@admin.com'
-      })
-      .expect(200, {"message": "User removed from our database"}, done);
-  });*/
 
 });
 
-describe('DO ADMIN-ONLY ACTIONS', function(){
+describe('Refresh tokens', function(){
+  var refreshTests = [
+    {
+      description: 'anything, no token at all',
+      args: {
+        token: ''
+      },
+      expected: {
+        "success": false,
+        "message": "No token provided."
+      }
+    },
+    {
+      description: 'a wrong token',
+      args: {
+        token: 'wrongtoken'
+      },
+      expected: {
+        "success": false,
+        "message": "Failed to authenticate token."
+      }
+    }/*,
+    {
+      description: 'a correct token',
+      args: {
+        token: adminToken
+      },
+      expected: ''
+    }*/
+  ];
+
+  refreshTests.forEach(function(test){
+    it('Refreshes ' + test.description, function(done){
+      request
+        .post(rootDir + '/authenticate/refresh')
+        .send(test.args)
+        .end(function(err, res){
+          if(res.body.success === false){
+            should.equal(res.body.message, test.expected.message)
+            done();
+          } else if(res.body.success === true){
+            console.log(res.body);
+            res.body.should.have.property('token');
+            done();
+          }
+        })
+    });
+  });
+
+});
+
+describe('/me opts', function(){
+  //ijp
+});
+
+describe('Commerce functions', function(){
   it('creates a new comm', function (done) {
     request
-      .post('/comms')
+      .post(rootDir + '/comms')
       .send({
         "token": adminToken,
         "name": "Tienda",
@@ -128,7 +265,7 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('cannot create a duplicate comm', function (done) {
     request
-      .post('/comms')
+      .post(rootDir + '/comms')
       .send({
         "token": adminToken,
         "name": "Tienda",
@@ -142,350 +279,126 @@ describe('DO ADMIN-ONLY ACTIONS', function(){
   });
   it('gets a single comm', function (done) {
     request
-      .get('/comms/barcelona_tienda')
+      .get(rootDir + '/comms/barcelona_tienda')
       .expect(200)
       .end(function(err, res){
-        assert.equal(res.body.hasOwnProperty('_id'), true);
+        res.body.should.have.property('_id');
         done();
       });
   });
 
+});
+
+describe('Set favs and unset', function(){
   it('sets a comm as fav', function(done){
     request
-      .post('/favs')
+      .post(rootDir + '/favs/barcelona_tienda')
       .send({
-        token: adminToken,
-        comm_id: 'barcelona_tienda'
+        token: adminToken
       })
-      .expect(200, {
-        "success": true,
-        "message": "Fav added: barcelona_tienda"
-      }, done);
+      .expect(200)
+      .end(function(err, res){
+        should.equal(res.body.message.en, 'Fav added: Tienda (barcelona_tienda)');
+        done();
+      });
   });
   it('UNsets a com as fav', function(done){
     request
-      .delete('/favs')
+      .delete(rootDir + '/favs/barcelona_tienda')
       .send({
-        token: adminToken,
-        comm_id: 'barcelona_tienda'
+        token: adminToken
       })
-      .expect(200, {
-        "success": true,
-        "message": "Fav removed: barcelona_tienda"
-      }, done);
+      .expect(200)
+      .end(function(err, res){
+        should.equal(res.body.message.en, 'Commerce removed from favorites');
+        done();
+      });
   });
-  it('gets a comm ownership key', function(done){
+})
+
+describe('Ownership related', function(){
+  var ownership = '';
+
+  it('gets a comm ownership key', function(){
     request
-      .get('/ownership/barcelona_tienda')
+      .get(rootDir + '/ownership/barcelona_tienda')
       .send({
         token: adminToken,
       })
       .end(function(err, res){
-        ownership = res.body.ownership.key;
-        if(ownership) done();
+        console.log(res.body);
+        res.body.should.have.property('ownership');
       })
   });
-  it('gets a wrong comm ownership key', function(done){
+  it('gets a wrong comm ownership key', function(){
     request
-      .get('/ownership/barcelona_t')
+      .get(rootDir + '/ownership/barcelona_t')
       .send({
         token: adminToken,
       })
       .expect(200, {
         "success": false,
         "message": "No comm found"
-      }, done);
-  });
-  it('sets as a comm admin', function(done){
-    request
-      .post('/ownership')
-      .send({
-        token: adminToken,
-        key: ownership
-      }).end(function(err, res){
-        request
-          .get('/ownership/barcelona_tienda')
-          .send({
-            token: adminToken
-          })
-          .expect(200)
-          .end(function(err, res){
-            assert.equal(res.body.ownership.owners[0] === 'test@admin.com', true);
-            done();
-          });
       });
-  });
-  it('removes as a comm admin', function(done){
-    request
-      .delete('/ownership')
-      .send({
-        token: adminToken,
-        key: ownership
-      }).end(function(err, res){
-        request
-          .get('/ownership/barcelona_tienda')
-          .send({
-            token: adminToken
-          })
-          .expect(200)
-          .end(function(err, res){
-            assert.equal(res.body.ownership.owners.length == 0, true);
-            done();
-          });
-      });
-  });
-  it('set as admin of a comm with a wrong ownership key', function(done){
-    request
-      .post('/ownership')
-      .send({
-        token: adminToken,
-        key: 12345
-      })
-      .expect(200, {
-        "success": false,
-        "message": "Wrong or unexistent ownership key"
-      }, done);
-  });
-  it('removes as admin of a comm with a wrong ownership key', function(done){
-    request
-      .delete('/ownership')
-      .send({
-        token: adminToken,
-        key: 12345
-      })
-      .expect(200, {
-        "success": false,
-        "message": "Wrong or unexistent ownership key"
-      }, done);
-  });
-
-
-});
-
-/*
-****************************************
-***     2nd BLOCK - test@user.com     ***
-****************************************
-*/
-
-
-describe('TEST NORMAL USER test@user.com', function() {
-
-  it('creates a new normal user', function (done) {
-    request
-      .post('/users')
-      .send({
-        email: 'test@user.com',
-        password: '1234'
-      })
-      .expect(200, {"success":true,"message":"New user added!"}, done);
-  });
-
-  it('authenticates a normal user', function (done){
-    request
-      .post('/authenticate')
-      .send({
-        email: 'test@user.com',
-        password: '1234'
-      })
-      .end(function(err, res){
-        userToken = res.body.token;
-        done();
-      })
-  });
-  it('user sets a wrong password', function (done) {
-    request
-      .put('/users')
-      .send({
-        token: userToken,
-        password: '123'
-      })
-      .expect(200, {
-        "success": false,
-        "message": "The value of password `123` is shorter than the minimum allowed length (4)."
-      },
-      done);
-  });
-  it('user sets a correct password', function (done) {
-    request
-      .put('/users')
-      .send({
-        token: userToken,
-        password: '12345'
-      })
-      .expect(200, {success:true, message: 'Password successfully changed'}, done)
   });
 
 });
 
-describe('DO USER-ONLY ACTIONS', function(){
-  it('cannot create a new comm, 403 forbidden', function (done) {
-    request
-      .post('/comms')
-      .send({
-        "token": userToken,
-        "name": "Tienda",
-        "location": "Barcelona",
-        "activity": "Salud",
-        "gps": "(54.49593, 39.91938)",
-        "web": "www.example.com",
-        "email": "tienda@tienda.com",
-        "address": "calle 1, 48",
-        "phone": "664664664",
-        "description": "Shop description",
-      })
-      .expect(403, done);
-  });
-  it('cannot delete a comm, 403 forbidden', function (done) {
-    request
-      .delete('/comms/barcelona_tienda')
-      .send( {token: userToken } )
-      .expect(403, done);
-
-  });
-  it('gets a single comm', function (done) {
-    request
-      .get('/comms/barcelona_tienda')
-      .expect(200)
-      .end(function(err, res){
-        assert.equal(res.body.hasOwnProperty('_id'), true);
-        done();
-      });
-  });
-
-  it('sets a comm as fav', function(done){
-    request
-      .post('/favs')
-      .send({
-        token: userToken,
-        comm_id: 'barcelona_tienda'
-      })
-      .expect(200, {
-        "success": true,
-        "message": "Fav added: barcelona_tienda"
-      }, done);
-  });
-  it('UNsets a comm as fav', function(done){
-    request
-      .delete('/favs')
-      .send({
-        token: userToken,
-        comm_id: 'barcelona_tienda'
-      })
-      .expect(200, {
-        "success": true,
-        "message": "Fav removed: barcelona_tienda"
-      }, done);
-  });
-
-  it('sets as a comm admin', function(done){
-    request
-      .post('/ownership')
-      .send({
-        token: userToken,
-        key: ownership
-      }).end(function(err, res){
-        request
-          .get('/ownership/barcelona_tienda')
-          .send({
-            token: adminToken
-          })
-          .expect(200)
-          .end(function(err, res){
-            assert.equal(res.body.ownership.owners[0] === 'test@user.com', true);
-            done();
-          });
-      });
-  });
-  it('removes as a comm admin', function(done){
-    request
-      .delete('/ownership')
-      .send({
-        token: userToken,
-        key: ownership
-      }).end(function(err, res){
-        request
-          .get('/ownership/barcelona_tienda')
-          .send({
-            token: adminToken
-          })
-          .expect(200)
-          .end(function(err, res){
-            assert.equal(res.body.ownership.owners.length == 0, true);
-            done();
-          });
-      });
-  });
-  it('set as admin of a comm with a wrong ownership key', function(done){
-    request
-      .post('/ownership')
-      .send({
-        token: userToken,
-        key: 12345
-      })
-      .expect(200, {
-        "success": false,
-        "message": "Wrong or unexistent ownership key"
-      }, done);
-  });
-  it('removes as admin of a comm with a wrong ownership key', function(done){
-    request
-      .delete('/ownership')
-      .send({
-        token: userToken,
-        key: 12345
-      })
-      .expect(200, {
-        "success": false,
-        "message": "Wrong or unexistent ownership key"
-      }, done);
-  });
 
 
-});
-
-/*
-****************************************
-***          SACRIFICE TIME          ***
-****************************************
-*/
-
-describe('SACRIFICE TIME: USERS AND TEST COMM', function() {
-  it('deletes a comm as ADMIN', function (done) {
-    request
-      .delete('/comms/barcelona_tienda')
-      .send( {token: adminToken } )
-      .expect(200, {
-        "message": "Commerce removed from the list!"
-      }, done);
-  });
-  it('normal user cannot delete ANOTHER USER', function (done) {
-    request
-      .delete('/users')
-      .send({
-        token: userToken,
-        email: 'test@admin.com'
-      })
-      .expect(403, done);
-  });
+describe('User deletion functions', function(){
   it('ADMIN deletes himself', function (done) {
     request
-      .delete('/users')
+      .delete(rootDir + '/users?email=test@admin.com')
       .send({
-        token: adminToken,
-        email: 'test@admin.com'
+        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwiZ2V0dGVycyI6e30sIndhc1BvcHVsYXRlZCI6ZmFsc2UsImFjdGl2ZVBhdGhzIjp7InBhdGhzIjp7InBhc3N3b3JkIjoibW9kaWZ5Iiwicm9sZSI6ImluaXQiLCJmYXZzIjoiaW5pdCIsIl9fdiI6ImluaXQiLCJfaWQiOiJpbml0In0sInN0YXRlcyI6eyJpZ25vcmUiOnt9LCJkZWZhdWx0Ijp7fSwiaW5pdCI6eyJfX3YiOnRydWUsInJvbGUiOnRydWUsImZhdnMiOnRydWUsIl9pZCI6dHJ1ZX0sIm1vZGlmeSI6eyJwYXNzd29yZCI6dHJ1ZX0sInJlcXVpcmUiOnt9fSwic3RhdGVOYW1lcyI6WyJyZXF1aXJlIiwibW9kaWZ5IiwiaW5pdCIsImRlZmF1bHQiLCJpZ25vcmUiXX0sImVtaXR0ZXIiOnsiZG9tYWluIjpudWxsLCJfZXZlbnRzIjp7fSwiX2V2ZW50c0NvdW50IjowLCJfbWF4TGlzdGVuZXJzIjowfX0sImlzTmV3IjpmYWxzZSwiX2RvYyI6eyJyb2xlIjoiYWRtaW4iLCJmYXZzIjpbImJpZ3Vlc19lc3NlbmNpYWwiLCJiaWd1ZXNfY2hpbm8iXSwiX192IjowLCJfaWQiOiJmcmFuY2VzY3JhbWlyZXpAZ21haWwuY29tIn0sIl9wcmVzIjp7IiRfX29yaWdpbmFsX3NhdmUiOltudWxsLG51bGwsbnVsbF19LCJfcG9zdHMiOnsiJF9fb3JpZ2luYWxfc2F2ZSI6W119LCJpYXQiOjE0NjIyNzA3MjF9.o5MMhNhOhnADwwmWjXkhfNWiDA1JFp0DuvR9QBclaCk'
       })
-      .expect(200, {"message": "User removed from our database"}, done);
+      .expect(200, {
+        success: true,
+        message:
+        { en: 'User removed from our database',
+          es: 'Usuario eliminado de nuestra base de datos'
+        }}, done);
   });
+  it('ADMIN deletes teset user', function (done) {
+    request
+      .delete(rootDir + '/users?email=test@user.com')
+      .send({
+        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwiZ2V0dGVycyI6e30sIndhc1BvcHVsYXRlZCI6ZmFsc2UsImFjdGl2ZVBhdGhzIjp7InBhdGhzIjp7InBhc3N3b3JkIjoibW9kaWZ5Iiwicm9sZSI6ImluaXQiLCJmYXZzIjoiaW5pdCIsIl9fdiI6ImluaXQiLCJfaWQiOiJpbml0In0sInN0YXRlcyI6eyJpZ25vcmUiOnt9LCJkZWZhdWx0Ijp7fSwiaW5pdCI6eyJfX3YiOnRydWUsInJvbGUiOnRydWUsImZhdnMiOnRydWUsIl9pZCI6dHJ1ZX0sIm1vZGlmeSI6eyJwYXNzd29yZCI6dHJ1ZX0sInJlcXVpcmUiOnt9fSwic3RhdGVOYW1lcyI6WyJyZXF1aXJlIiwibW9kaWZ5IiwiaW5pdCIsImRlZmF1bHQiLCJpZ25vcmUiXX0sImVtaXR0ZXIiOnsiZG9tYWluIjpudWxsLCJfZXZlbnRzIjp7fSwiX2V2ZW50c0NvdW50IjowLCJfbWF4TGlzdGVuZXJzIjowfX0sImlzTmV3IjpmYWxzZSwiX2RvYyI6eyJyb2xlIjoiYWRtaW4iLCJmYXZzIjpbImJpZ3Vlc19lc3NlbmNpYWwiLCJiaWd1ZXNfY2hpbm8iXSwiX192IjowLCJfaWQiOiJmcmFuY2VzY3JhbWlyZXpAZ21haWwuY29tIn0sIl9wcmVzIjp7IiRfX29yaWdpbmFsX3NhdmUiOltudWxsLG51bGwsbnVsbF19LCJfcG9zdHMiOnsiJF9fb3JpZ2luYWxfc2F2ZSI6W119LCJpYXQiOjE0NjIyNzA3MjF9.o5MMhNhOhnADwwmWjXkhfNWiDA1JFp0DuvR9QBclaCk'
+      })
+      .expect(200, {
+        success: true,
+        message:
+        { en: 'User removed from our database',
+          es: 'Usuario eliminado de nuestra base de datos'
+        }}, done);
+  });
+});
 
-  it('normal user deletes himself', function (done) {
+
+describe('Admin deletes test comms', function(){
+  it('deletes a comm as ADMIN', function (done) {
+    request
+      .delete(rootDir + '/comms/barcelona_tienda')
+      .send( {token: adminToken } )
+      .end(function(err, res){
+        res.body.should.have.property("removed");
+        should.equal(res.body.removed, 'barcelona_tienda');
+        done();
+      })
+  });
+});
+
+
+
+
+
+  /*it('deletes an unexistent user', function (done) {
     request
       .delete('/users')
       .send({
-        token: userToken,
-        email: 'test@user.com'
+        token: adminToken,
+        email: 'test111@admin.com'
       })
       .expect(200, {"message": "User removed from our database"}, done);
-  });
-
-});
+  });*/
