@@ -26,6 +26,9 @@ var UserSchema = new Schema({
     type: String,
     default: 'user'
   },
+  'loc': {
+    type: String
+  },
   'favs': [{
     type: String, unique: true, ref: 'Comm'
   }],

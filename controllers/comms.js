@@ -46,7 +46,12 @@ exports.postComms = function(req, res) {
  */
 exports.getComms = function(req, res) {
   // Use the Commerce model to find all commerces
-  Comm.find({}, {ownership: 0}, function(err, comms) {
+  console.log(req.query);
+  if(!req.query.loc) req.query.loc = '';
+  Comm.find({
+    //location: new RegExp('.*'+req.query.loc+'.*', 'i')
+    location: new RegExp('.*\w*'+req.query.loc+'\w*.*', "ig")
+  }, {ownership: 0}, function(err, comms) {
     if (err) return res.send(err);
     res.json(comms);
 

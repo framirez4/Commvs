@@ -13,7 +13,8 @@ exports.postUsers = function(req, res) {
     'first_name': req.body.first_name,
     'last_name': req.body.last_name,
     'password': req.body.password,
-    'role': req.body.role || 'user'
+    'role': req.body.role || 'user',
+    'loc': req.body.loc || ''
   });
 
   user.save(function(err) {
