@@ -69,7 +69,7 @@ exports.getUsers = function(req, res) {
 
 /**
  * Edit any user data fields
- * Excludes: _id, password, role, owns, favs
+ * Excludes: _id, password, role, owns, bookmarks
  * Ignores any unknown field
  * @param  {Object} req User from req.decoded._doc and new data at req.body
  * @param  {Object} res
@@ -80,7 +80,7 @@ exports.editUser = function(req, res) {
   if (req.body.hasOwnProperty('password')) delete req.body.password;
   if (req.body.hasOwnProperty('role')) delete req.body.role;
   if (req.body.hasOwnProperty('owns')) delete req.body.owns;
-  if (req.body.hasOwnProperty('favs')) delete req.body.favs;
+  if (req.body.hasOwnProperty('bookmarks')) delete req.body.bookmarks;
   User.update(
     { _id: req.decoded._doc._id },
     req.body,

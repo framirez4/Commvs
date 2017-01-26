@@ -1,5 +1,5 @@
 const connectRoles = require('connect-roles');
-const Comm = require('../models/comms');
+const Comm = require('../models/commerce');
 const User = require('../models/user');
 
 

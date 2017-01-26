@@ -1,6 +1,6 @@
 // Load packages
 
-const Comm = require('../models/comms');
+const Comm = require('../models/commerce');
 const User = require('../models/user');
 
 // Get only the comm ownership object

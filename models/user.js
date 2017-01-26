@@ -1,45 +1,28 @@
 // Load required packages
-var mongoose  = require('mongoose'),
-    Schema    = mongoose.Schema;
-var bcrypt    = require('bcrypt-nodejs');
+const mongoose  = require('mongoose');
+const Schema    = mongoose.Schema;
+const bcrypt    = require('bcryptjs');
 
 // Define our user schema
 var UserSchema = new Schema({
-  '_id': {
+  'email': {
     type: String,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
+    unique: true
   },
-  'first_name': {
-    type: String,
-    required: true
-  },
-  'last_name': {
-    type: String,
-    required: true
-  },
+  'first_name': { type: String, required: true },
+  'last_name': { type: String, required: true },
+  'role': { type: String, enum: ['user', 'admin'], default: 'user' },
   'password': {
     type: String,
     required: true,
     minlength: [6, 'The value of {PATH} is shorter than the minimum allowed length ({MINLENGTH}).']
   },
-  'role': {
-    type: String,
-    default: 'user'
-  },
-  'loc': {
-    type: String
-  },
-  'favs': [{
-    type: String, unique: true, ref: 'Comm'
-  }],
-  'owns': [{
-    type: String, unique: true, ref: 'Comm'
-  }]
-});
 
-// Virtual value to match _id as email
-UserSchema.virtual('email').get(function() {
-  return this._id;
+  'loc': { type: String },
+
+  'bookmarks': [{ type: String, unique: true, ref: 'Commerce' }],
+  'owns': [{ type: String, unique: true, ref: 'Commerce' }]
 });
 
 // Execute before each user.save() call
@@ -61,10 +44,10 @@ UserSchema.pre('save', function(next) {
   });
 });
 
-UserSchema.methods.verifyPassword = function(password, cb) {
+UserSchema.methods.verifyPassword = function(password, callback) {
   bcrypt.compare(password, this.password, function(err, isMatch) {
-    if (err) return cb(err);
-    cb(null, isMatch);
+    if (err) return callback(err);
+    callback(null, isMatch);
   });
 };
 

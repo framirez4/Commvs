@@ -153,28 +153,28 @@ describe('DO USER-ONLY ACTIONS', function(){
       });
   });
 
-  it('sets a comm as fav', function(done){
+  it('sets a comm as Bookmark', function(done){
     request
-      .post('/favs')
+      .post('/bookmarks')
       .send({
         token: userToken,
         comm_id: 'barcelona_tienda'
       })
       .expect(200, {
         "success": true,
-        "message": "Fav added: barcelona_tienda"
+        "message": "Bookmark added: barcelona_tienda"
       }, done);
   });
-  it('UNsets a comm as fav', function(done){
+  it('UNsets a comm as Bookmark', function(done){
     request
-      .delete('/favs')
+      .delete('/bookmarks')
       .send({
         token: userToken,
         comm_id: 'barcelona_tienda'
       })
       .expect(200, {
         "success": true,
-        "message": "Fav removed: barcelona_tienda"
+        "message": "Bookmark removed: barcelona_tienda"
       }, done);
   });
 

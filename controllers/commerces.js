@@ -7,16 +7,16 @@ const User = require('../models/user');
 
 
 /**
- * Create endpoint to add a new Promo
- * @param  {Object} req reads token from header, only owners can insert.
+ * Create endpoint to add a new Comm
+ * @param  {Object} req reads token from header, only admins can insert.
  * From body: name, address, location, phone, description, email, gps, web, schedule, activity
  * ID is built automatically from location_name
  * @param  {Object} res
  * @return {Object}     {success, message, data}
  */
-exports.postPromo = function(req, res) {
-  /*// Create a new instance of the Commerce model
-  var promo = Comm({
+exports.postComms = function(req, res) {
+  // Create a new instance of the Commerce model
+  var comm = Comm({
     // Set the commerce properties that came from the POST data
     name: req.body.name,
     address: req.body.address,
@@ -34,8 +34,8 @@ exports.postPromo = function(req, res) {
   comm.save(function(err) {
     if (err) return res.json({ success: false, error: err });
 
-    res.json({ success: true, message: 'Commerce added to the list!', data: comm });
-  });*/
+    res.json({ success: true, message: { en: 'Commerce added to the list!', es: 'Comercio añadido a la lista!' }, data: comm });
+  });
 };
 
 /**
@@ -44,15 +44,18 @@ exports.postPromo = function(req, res) {
  * @param  {Object} res
  * @return {Array}     [{Comm}]
  */
-exports.getPromos = function(req, res) {
-  /*// Use the Commerce model to find all commerces
-  Comm.find({}, {ownership: 0}, function(err, comms) {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(comms);
-    }
-  });*/
+exports.getComms = function(req, res) {
+  // Use the Commerce model to find all commerces
+  console.log(req.query);
+  if(!req.query.loc) req.query.loc = '';
+  Comm.find({
+    //location: new RegExp('.*'+req.query.loc+'.*', 'i')
+    location: new RegExp('.*\w*'+req.query.loc+'\w*.*', "ig")
+  }, {ownership: 0}, function(err, comms) {
+    if (err) return res.send(err);
+    res.json(comms);
+
+  });
 };
 
 /**
@@ -61,13 +64,13 @@ exports.getPromos = function(req, res) {
  * @param  {Object} res
  * @return {Object}     {Comm}
  */
-exports.getPromo = function(req, res) {
-  /*// Use the Commerce model to find a specific commerce
+exports.getComm = function(req, res) {
+  // Use the Commerce model to find a specific commerce
   Comm.findById(req.params.comm_id, {ownership: 0}, function(err, comms) {
     if (err) return res.send(err);
-    if (!comms) return res.json({ message: 'Commerce not found' });
+    if (!comms) return res.json({ success: false, message: {en: "Commerce could not be found", es: "No se ha podido encontrar el comercio"} });
     res.json(comms);
-  });*/
+  });
 };
 
 /**
@@ -76,21 +79,24 @@ exports.getPromo = function(req, res) {
  * @param  {Object} res
  * @return {Object}     {New comm data}
  */
-exports.putPromo = function(req, res) {
-  /*// Use the Commerce model to find a specific commerce
-  if (req.body.hasOwnProperty('_id')) delete req.body._id
-  if (req.body.hasOwnProperty('ownership')) delete req.body.ownership
+exports.putComm = function(req, res) {
+  // Use the Commerce model to find a specific commerce
+  if (req.body.hasOwnProperty('_id')) delete req.body._id;
+  if (req.body.hasOwnProperty('ownership')) delete req.body.ownership;
 
   Comm.update(
     { _id: req.params.comm_id },
     req.body,
     function(err, modified){
       if (err) return res.send(err);
-      if (modified.nModified == 0) {
+      if (modified.nModified === 0) {
         return res.json(
           {
             success: true,
-            message: 'No Commerce data was modified'
+            message: {
+              en: 'No Commerce data was modified',
+              es: 'No se han modificado los datos del comercio'
+            }
           }
         );
       }
@@ -98,12 +104,15 @@ exports.putPromo = function(req, res) {
         return res.json(
           {
             success: true,
-            message: 'Commerce data updated successfully'
+            message: {
+              en: 'Commerce data updated successfully',
+              es: 'Los datos del comercio se han actualizado correctamente'
+            }
           }
         );
       }
     }
-  );*/
+  );
 };
 
 /**
@@ -112,11 +121,11 @@ exports.putPromo = function(req, res) {
  * @param  {Object} res
  * @return {Object}     {success,message}
  */
-exports.deletePromo = function(req, res) {
-  /*Comm.findById(
+exports.deleteComm = function(req, res) {
+  Comm.findById(
     req.params.comm_id,
     function ( err, comm ) {
-      if (!comm) return res.json({ success: false, message: 'Commerce not found'});
+      if (!comm) return res.json({ success: false, message: {en: "Commerce could not be found", es: "No se ha podido encontrar el comercio"} });
         // Use the Comm model to find a specific comm and remove it
         Comm.findByIdAndRemove(comm._id, function(err) {
           if (err){
@@ -129,7 +138,7 @@ exports.deletePromo = function(req, res) {
               {multi: true},
               function(err, user) {
                 if (err) return res.json({ success: false, message: err });
-                res.json({ success: true, removed: comm._id, message: 'Commerce removed and all its admins' });
+                res.json({ success: true, removed: comm._id, message: { en: 'Commerce removed and all its admins', es: 'Comercio eliminado y todos sus administradores' } });
 
               }
             );
@@ -139,6 +148,6 @@ exports.deletePromo = function(req, res) {
           }
         });
     }
-  )
-*/
+  );
+
 };

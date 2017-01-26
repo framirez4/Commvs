@@ -289,28 +289,28 @@ describe('Commerce functions', function(){
 
 });
 
-describe('Set favs and unset', function(){
-  it('sets a comm as fav', function(done){
+describe('Set bookmarks and unset', function(){
+  it('sets a comm as Bookmark', function(done){
     request
-      .post(rootDir + '/favs/barcelona_tienda')
+      .post(rootDir + '/bookmarks/barcelona_tienda')
       .send({
         token: adminToken
       })
       .expect(200)
       .end(function(err, res){
-        should.equal(res.body.message.en, 'Fav added: Tienda (barcelona_tienda)');
+        should.equal(res.body.message.en, 'Bookmark added: Tienda (barcelona_tienda)');
         done();
       });
   });
-  it('UNsets a com as fav', function(done){
+  it('UNsets a com as Bookmark', function(done){
     request
-      .delete(rootDir + '/favs/barcelona_tienda')
+      .delete(rootDir + '/bookmarks/barcelona_tienda')
       .send({
         token: adminToken
       })
       .expect(200)
       .end(function(err, res){
-        should.equal(res.body.message.en, 'Commerce removed from favorites');
+        should.equal(res.body.message.en, 'Commerce removed from Bookmarkorites');
         done();
       });
   });
