@@ -1,6 +1,6 @@
-var connectRoles = require('connect-roles');
-var Comm = require('../models/comms');
-var User = require('../models/user');
+const connectRoles = require('connect-roles');
+const Comm = require('../models/comms');
+const User = require('../models/user');
 
 
 var user = new connectRoles({

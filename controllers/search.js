@@ -1,6 +1,6 @@
 // Load packages
-var Comm = require('../models/comms');
-var User = require('../models/user');
+const Comm = require('../models/comms');
+const User = require('../models/user');
 
 exports.searchComms = function(req, res) {
   Comm.find(
@@ -12,5 +12,5 @@ exports.searchComms = function(req, res) {
       if (err) res.send(err);
       res.json(comms);
     }
-  )
+  );
 };

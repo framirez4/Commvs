@@ -1,15 +1,15 @@
 // Require modules
-var connectRoles    = require('connect-roles');
+const connectRoles    = require('connect-roles');
 
 // Require controllers
-var searchController = require('../controllers/search');
-var authController  = require('../controllers/auth');
-var user            = require('../controllers/role');
+const searchController = require('../controllers/search');
+const authController  = require('../controllers/auth');
+const user            = require('../controllers/role');
 
-var router          = require('express').Router(); // Create router
+const router          = require('express').Router(); // Create router
 
 //ROUTES for COMMS
 router.route('/')
-  .get(searchController.searchComms) // Get a list of comms
+  .get(searchController.searchComms); // Get a list of comms
 
 module.exports = router;

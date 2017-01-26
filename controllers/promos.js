@@ -1,7 +1,7 @@
 // Load packages
 
-var Comm = require('../models/comms');
-var User = require('../models/user');
+const Comm = require('../models/comms');
+const User = require('../models/user');
 //var Ownkey = require('../models/ownkeys');
 
 

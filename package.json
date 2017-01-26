@@ -17,21 +17,21 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
-    "body-parser": "^1.14.2",
+    "body-parser": "^1.16.0",
     "connect-roles": "^3.1.2",
-    "cors": "^2.7.1",
-    "dotenv": "^2.0.0",
-    "express": "^4.13.4",
-    "helmet": "^1.1.0",
-    "jsonwebtoken": "^5.7.0",
+    "cors": "^2.8.1",
+    "dotenv": "^4.0.0",
+    "express": "^4.14.0",
+    "helmet": "^3.4.0",
+    "jsonwebtoken": "^7.2.1",
     "keygenerator": "^1.0.4",
-    "mongoose": "^4.4.3",
+    "mongoose": "^4.7.8",
     "morgan": "^1.7.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
-    "mocha": "^2.4.5",
-    "should": "^8.2.2",
-    "supertest": "^1.2.0"
+    "mocha": "~3.2.0",
+    "should": "~11.1.2",
+    "supertest": "~2.0.1"
   }
 }

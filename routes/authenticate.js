@@ -1,8 +1,8 @@
 // ==== MAIN ROUTES FILE ====
-var authController = require('../controllers/auth');
-var connectRoles    = require('connect-roles');
+const authController = require('../controllers/auth');
+const connectRoles    = require('connect-roles');
 
-var router = require('express').Router(); //create router
+const router = require('express').Router(); //create router
 
 
 router.route('/')

@@ -1,6 +1,6 @@
-var jwt     = require('jsonwebtoken');
-var config  = require('../config');
-var User    = require('../models/user');
+const jwt     = require('jsonwebtoken');
+const config  = require('../config');
+const User    = require('../models/user');
 
 /**
  * Authenticate a user
@@ -10,7 +10,7 @@ var User    = require('../models/user');
  */
 exports.authenticate = function(req, res) {
   User.findOne({ '_id': req.body.email }, function (err, user) {
-    if(err){ return err }
+    if(err){ return err; }
     else {
       // No user found with that username
       if (!user) return res.json({ success: false, message: 'Authentication failed. User not found.' });
@@ -20,10 +20,9 @@ exports.authenticate = function(req, res) {
           if(!isMatch) return res.json({ success: false, message: 'Authentication failed. Wrong password.'});
 
           // Limit the use time for an admin-token
-          if (user.role == 'admin')
-            var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
-          else
-            var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "7d" });
+          var token = user.role === 'admin' ?
+            jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" }) :
+            jwt.sign(user, config.secret.simple_key, { expiresIn: "7d" });
 
           // return the information including token as JSON
           res.json({
@@ -32,7 +31,7 @@ exports.authenticate = function(req, res) {
             token: token
           });
         });
-      };
+      }
     }
   });
 };
@@ -48,12 +47,11 @@ exports.refreshToken = function(req, res) {
   User.findById(
     req.decoded._doc._id,
     function( err, user ){
-      if(req.decoded._doc.password !== user.password) return res.json({success: false, message: 'Token refresh was revoked'})
+      if(req.decoded._doc.password !== user.password) return res.json({success: false, message: 'Token refresh was revoked'});
 
-      if (user.role == 'admin')
-        var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" });
-      else
-        var token = jwt.sign(user, config.secret.simple_key, { expiresIn: "7d" });
+      var token = user.role == 'admin' ?
+        jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" }) :
+        jwt.sign(user, config.secret.simple_key, { expiresIn: "7d" });
 
       // return the information including token as JSON
       res.json({
@@ -62,7 +60,7 @@ exports.refreshToken = function(req, res) {
         token: token
       });
     }
-  )
+  );
 };
 
 /**

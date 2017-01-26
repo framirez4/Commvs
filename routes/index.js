@@ -1,7 +1,7 @@
 // ==== MAIN ROUTES FILE ====
-var authController = require('../controllers/auth');
+const authController = require('../controllers/auth');
 
-var router = require('express').Router(); //create router
+const router = require('express').Router(); //create router
 
 //==== ROUTES ====
 

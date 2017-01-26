@@ -1,7 +1,7 @@
 // Load packages
 
-var Comm = require('../models/comms');
-var User = require('../models/user');
+const Comm = require('../models/comms');
+const User = require('../models/user');
 //var Ownkey = require('../models/ownkeys');
 
 
@@ -81,15 +81,15 @@ exports.getComm = function(req, res) {
  */
 exports.putComm = function(req, res) {
   // Use the Commerce model to find a specific commerce
-  if (req.body.hasOwnProperty('_id')) delete req.body._id
-  if (req.body.hasOwnProperty('ownership')) delete req.body.ownership
+  if (req.body.hasOwnProperty('_id')) delete req.body._id;
+  if (req.body.hasOwnProperty('ownership')) delete req.body.ownership;
 
   Comm.update(
     { _id: req.params.comm_id },
     req.body,
     function(err, modified){
       if (err) return res.send(err);
-      if (modified.nModified == 0) {
+      if (modified.nModified === 0) {
         return res.json(
           {
             success: true,
@@ -148,6 +148,6 @@ exports.deleteComm = function(req, res) {
           }
         });
     }
-  )
+  );
 
 };

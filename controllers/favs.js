@@ -1,6 +1,6 @@
 // Load required packages
-var User = require('../models/user');
-var Comm = require('../models/comms');
+const User = require('../models/user');
+const Comm = require('../models/comms');
 
 // Create endpoint /favs for POST
 
@@ -24,8 +24,7 @@ exports.postFav = function(req, res) {
         }
       );
     }
-  )
-
+  );
 };
 
 /**

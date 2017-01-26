@@ -1,7 +1,7 @@
 // Load packages
 
-var Comm = require('../models/comms');
-var User = require('../models/user');
+const Comm = require('../models/comms');
+const User = require('../models/user');
 
 // Get only the comm ownership object
 
@@ -13,7 +13,7 @@ exports.getOwnership = function(req, res) {
       id: comms._id,
       name: comms.name,
       ownership: comms.ownership
-    })
+    });
 
   });
 };

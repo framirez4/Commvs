@@ -1,5 +1,5 @@
 // Load required packages
-var User = require('../models/user');
+const User = require('../models/user');
 
 /**
  * POST a new user
@@ -27,23 +27,23 @@ exports.postUsers = function(req, res) {
             errors.first_name = {};
             errors.first_name.message = err.errors['first_name'].message;
             errors.first_name.type = err.errors['first_name'].properties.type;
-          };
+          }
           if(err.errors['last_name']) {
             errors.last_name = {};
             errors.last_name.message = err.errors['last_name'].message;
             errors.last_name.type = err.errors['last_name'].properties.type;
-          };
+          }
           if(err.errors['_id']) {
             errors.id = {};
             errors.id.message = err.errors['_id'].message;
             errors.id.type = err.errors['_id'].properties.type;
-          };
+          }
           if(err.errors['password']) {
             errors.password = {};
             errors.password.message = err.errors['password'].message;
             errors.password.type = err.errors['password'].properties.type;
-          };
-
+          }
+          
           return res.json({ success: false, message: errors });
         }
 
@@ -86,7 +86,7 @@ exports.editUser = function(req, res) {
     req.body,
     function(err, modified){
       if (err) return res.send(err);
-      if (modified.nModified == 0)
+      if (modified.nModified === 0)
         return res.json(
           { success: true,
             message: {
@@ -103,7 +103,7 @@ exports.editUser = function(req, res) {
             }
           });
     }
-  )
+  );
 };
 
 /**
@@ -132,7 +132,7 @@ exports.editPassword = function(req, res) {
     });
   });
 
-}
+};
 
 /**
  * Delete a user from db
@@ -157,7 +157,7 @@ exports.deleteUsers = function(req, res) {
           });
       });
     }
-  )
+  );
 };
 
 /**

@@ -48,7 +48,7 @@ CommSchema.pre('save', function(callback) {
   var comm = this;
 
   //if _id is not null, callback
-  if(comm._id != null) return callback();
+  if(comm._id !== null) return callback();
 
   var str_name  = (comm.name).replace(/ /g, "-").replace(/\'/g, "").toLowerCase();
   var str_loc   = (comm.location).replace(/ /g, "-").replace(/\'/g, "").toLowerCase();
@@ -59,7 +59,7 @@ CommSchema.pre('save', function(callback) {
 });
 // Pre generate a new key for comm
 CommSchema.pre('save', function(callback){
-  if(this.ownership.key != undefined) return callback();
+  if(this.ownership.key !== undefined) return callback();
   this.ownership.key = keygen.number();
   callback();
 });

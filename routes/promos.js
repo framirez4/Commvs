@@ -1,12 +1,12 @@
 // Require modules
-var connectRoles    = require('connect-roles');
+const connectRoles    = require('connect-roles');
 
 // Require controllers
-var promosController = require('../controllers/promos');
-var authController   = require('../controllers/auth');
-var user             = require('../controllers/role');
+const promosController = require('../controllers/promos');
+const authController   = require('../controllers/auth');
+const user             = require('../controllers/role');
 
-var router           = require('express').Router(); // Create router
+const router           = require('express').Router(); // Create router
 
 //ROUTES for COMMS
 router.route('/')
