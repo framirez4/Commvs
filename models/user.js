@@ -1,54 +1,52 @@
 // Load required packages
 const mongoose  = require('mongoose');
 const Schema    = mongoose.Schema;
-const bcrypt    = require('bcryptjs');
+const bcrypt    = require('bcrypt');
+const utils = require('../controllers/utils');
+const saltRounds = 10;
+
 
 // Define our user schema
 var UserSchema = new Schema({
   'email': {
     type: String,
+    required: [true, 'Please, fill a valid email address'],
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
-    unique: true
+    unique: true,
+    validate: [ utils.findFieldDuplication('User', 'email'), 'This email adress is already associated to a user' ]
   },
-  'first_name': { type: String, required: true },
-  'last_name': { type: String, required: true },
-  'role': { type: String, enum: ['user', 'admin'], default: 'user' },
   'password': {
     type: String,
-    required: true,
+    required: [true, 'Please, insert a valid password'],
     minlength: [6, 'The value of {PATH} is shorter than the minimum allowed length ({MINLENGTH}).']
   },
+  'first_name': { type: String, required: [true, 'Please, insert your first name'] },
+  'last_name': { type: String, required: [true, 'Please, insert your last name'] },
+  'role': { type: String, enum: ['user', 'admin'], default: 'user' },
 
   'loc': { type: String },
 
-  'bookmarks': [{ type: String, unique: true, ref: 'Commerce' }],
-  'owns': [{ type: String, unique: true, ref: 'Commerce' }]
+  'bookmarks': [{ type: Schema.Types.ObjectId, unique: true, ref: 'Commerce' }],
+  'owns': [{ type: Schema.Types.ObjectId, unique: true, ref: 'Commerce' }]
 });
 
 // Execute before each user.save() call
-UserSchema.pre('save', function(next) {
-  var user = this;
+UserSchema.pre('save', function (next) {
+  if (!this.isModified('password')) return next(); // Break out if the password hasn't changed
 
-  // Break out if the password hasn't changed
-  if (!user.isModified('password')) return next();
-
-  // Password changed so we need to hash it
-  bcrypt.genSalt(5, function(err, salt) {
-    if (err) return next(err);
-
-    bcrypt.hash(user.password, salt, null, function(err, hash) {
-      if (err) return callback(err);
-      user.password = hash;
-      next();
-    });
+  bcrypt.hash(this.password, saltRounds)
+  .then((hash) => {
+    this.password = hash;
+    return next();
+  })
+  .catch((err) => {
+    console.error('Error while creating the password');
+    return next(err);
   });
 });
 
-UserSchema.methods.verifyPassword = function(password, callback) {
-  bcrypt.compare(password, this.password, function(err, isMatch) {
-    if (err) return callback(err);
-    callback(null, isMatch);
-  });
+UserSchema.methods.verifyPassword = function (password) {
+  return bcrypt.compare(password, this.password);
 };
 
 // Export the Mongoose model

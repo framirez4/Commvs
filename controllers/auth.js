@@ -2,21 +2,15 @@ const jwt     = require('jsonwebtoken');
 const config  = require('../config');
 const User    = require('../models/user');
 
-/**
- * Authenticate a user
- * @param  {object} req Reads req.body.email and req.body.password
- * @param  {object} res
- * @return {object}     {success, message, token}
- */
-exports.authenticate = function(req, res) {
-  User.findOne({ '_id': req.body.email }, function (err, user) {
-    if(err){ return err; }
-    else {
+exports.authenticate = (req, res) => {
+  User.findOne({ 'email': req.body.email }).exec()
+  .then((user) => {
       // No user found with that username
       if (!user) return res.json({ success: false, message: 'Authentication failed. User not found.' });
       else if (user) {
         // Make sure the password is correct
-        user.verifyPassword(req.body.password, function(err, isMatch) {
+        user.verifyPassword(req.body.password)
+        .then((isMatch) => {
           if(!isMatch) return res.json({ success: false, message: 'Authentication failed. Wrong password.'});
 
           // Limit the use time for an admin-token
@@ -32,7 +26,10 @@ exports.authenticate = function(req, res) {
           });
         });
       }
-    }
+
+  })
+  .catch((err) => {
+    return res.json({ success: false, message: `Error while authenticating: ${err}` });
   });
 };
 

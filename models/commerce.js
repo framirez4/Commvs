@@ -1,7 +1,7 @@
 // Load packages
-var keygen    = require('keygenerator');
-var mongoose  = require('mongoose'),
-    Schema    = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const keygen  = require('keygenerator');
 
 //var Ownership = require('./ownershop.js');
 
@@ -19,28 +19,16 @@ var CommSchema   = new Schema({
   schedule: String,
   activity: String,
   promos: [{
-    name: {
-      type: String,
-      required: true
-    },
-    description: {
-      type: String
-    },
+    name: { type: String, required: true },
+    description: { type: String },
     valid: {
       start: { type: Date, required: true, default: Date.now },
       end: { type: Date, required: true}
     }
   }],
   ownership: {
-    key: {
-      type: Number,
-      unique: true,
-      length: [8, 'The value of key must be {length}']
-    },
-    owners: [{
-      type: String,
-      ref: 'User'
-    }]
+    key: { type: Number, unique: true, length: [8, 'The value of key must be {length}'] },
+    owners: [{ type: Schema.Types.ObjectId, ref: 'User' }]
   }
 });
 
@@ -65,4 +53,4 @@ CommSchema.pre('save', function(callback){
 });
 
 // Export the Mongoose model
-module.exports = mongoose.model('Comm', CommSchema);
+module.exports = mongoose.model('Commerce', CommSchema);

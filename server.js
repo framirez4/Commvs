@@ -1,13 +1,10 @@
 // Load required packages
-var config  = require('./config'); // Log config from files
-var app     = require('./app');   // Log main express app module
-
-app.set('trust proxy', true);
-app.set('trust proxy', 'loopback');
+const config  = require('./config'); // Log config from files
+const app     = require('./app');   // Log main express app module
 
 // Start the server
 var server = app.listen(config.port, function(){
-  console.log('Starting Kapeloi-server on port ' + config.port);
+  console.info(`Starting Kapeloi-server on port ${config.port}`);
 });
 
 module.exports = server;

@@ -7,9 +7,10 @@ const router = require('express').Router(); //create router
 
 //Test root route
 router.get('/', function(req, res) {
-  res.json({ message: 'Kapeloi root directory for API v1. More info at Github repository.',
-             repository: 'htttps://github.com/framirez4/kapeloi-server'
-           });
+  res.json({
+    message: 'Kapeloi root directory for API v1. More info at Github repository.',
+    repository: 'htttps://github.com/framirez4/kapeloi-server'
+  });
 });
 
 //Main mounted routes

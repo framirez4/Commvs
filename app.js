@@ -1,25 +1,29 @@
-var express     = require('express');
-var mongoose    = require('mongoose');
-var morgan      = require('morgan');
-var bodyParser  = require('body-parser');
-var helmet      = require('helmet');
-var cors        = require('cors');
-var app         = express(); //Create express app
+const express     = require('express');
+const mongoose    = require('mongoose');
+const morgan      = require('morgan');
+const bodyParser  = require('body-parser');
+const helmet      = require('helmet');
+const cors        = require('cors');
+const app         = express(); //Create express app
 
-var config = require('./config');
+const config = require('./config');
+
+mongoose.Promise = global.Promise;
 mongoose.connect(config.database);  //Connect database
 
+app
+  .set('trust proxy', true)
+  .set('trust proxy', 'loopback')
 
 // ==== MIDDLEWARES ====
-app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(cors());
-app.use(helmet());
-
+  .use(morgan('dev'))
+  .use(bodyParser.urlencoded({ extended: false }))
+  .use(bodyParser.json())
+  .use(cors())
+  .use(helmet())
 
 // ==== MOUNT ROUTES ====
-app.use('/v1', require('./routes/index'));
+  .use('/v1', require('./routes/index'));
 
 
 module.exports = app; // export app module

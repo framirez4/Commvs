@@ -12,7 +12,6 @@ const router           = require('express').Router(); // Create router
 router.route('/')
   .get(promosController.getPromos); // Get a list of comms
 
-
 router.route('/:comm_id')
   .post(authController.verifyToken, user.can('update an owned comm data'), promosController.postPromo) // Owner - Post a new promo
   .get(promosController.getPromo) // Get promos of a comm - Allowed for everyone

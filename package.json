@@ -1,22 +1,19 @@
 {
-  "name": "commvs",
+  "name": "kapeloi-server",
   "version": "1.0.0",
-  "description": "Commerce list",
   "repository": {
     "type": "git",
-    "url": "https://github.com/framirez4/Commvs"
+    "url": "https://github.com/framirez4/kapeloi-server"
   },
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "Commerce"
-  ],
-  "author": "Francesc Ramírez",
-  "license": "ISC",
+  "repository": "git@github.com:framirez4/kapeloi-server.git",
+  "author": "Francesc Ramírez <francescramirez@gmail.com>",
+  "license": "MIT",
   "dependencies": {
-    "bcryptjs": "^2.4.0",
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.16.0",
     "connect-roles": "^3.1.2",
     "cors": "^2.8.1",
@@ -26,13 +23,12 @@
     "jsonwebtoken": "^7.2.1",
     "keygenerator": "^1.0.4",
     "mongoose": "^4.7.8",
-    "morgan": "^1.7.0",
-    "node-gyp": "^3.5.0"
+    "morgan": "^1.7.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
-    "mocha": "~3.2.0",
-    "should": "~11.1.2",
-    "supertest": "~2.0.1"
+    "mocha": "^3.2.0",
+    "should": "^11.2.0",
+    "supertest": "^2.0.1"
   }
 }
