@@ -39,10 +39,7 @@ UserSchema.pre('save', function (next) {
     this.password = hash;
     return next();
   })
-  .catch((err) => {
-    console.error('Error while creating the password');
-    return next(err);
-  });
+  .catch(next);
 });
 
 UserSchema.methods.verifyPassword = function (password) {

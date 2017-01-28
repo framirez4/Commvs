@@ -16,7 +16,7 @@ app
   .set('trust proxy', 'loopback')
 
 // ==== MIDDLEWARES ====
-  .use(morgan('dev'))
+  // .use(morgan('dev'))
   .use(bodyParser.urlencoded({ extended: false }))
   .use(bodyParser.json())
   .use(cors())

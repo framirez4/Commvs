@@ -1,7 +1,7 @@
 const mongoose  = require('mongoose');
 
 // Validation for any unique field in a mongoose model
-exports.findFieldDuplication = function(model, field) {
+exports.findFieldDuplication = function (model, field) {
   return function (entry, callback) {
 
     var q = {};
@@ -11,4 +11,12 @@ exports.findFieldDuplication = function(model, field) {
     .then( doc => callback(!doc) )
     .catch(callback);
   };
+};
+
+exports.filterValidationModelErrors = function (errors) {
+  for (var key in errors) {
+    errors[key] = errors[key].properties;
+  }
+
+  return errors;
 };

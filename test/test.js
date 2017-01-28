@@ -4,7 +4,7 @@ var assert = require('assert');
 var request = require('supertest')(myApp);
 var adminToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyIkX18iOnsic3RyaWN0TW9kZSI6dHJ1ZSwiZ2V0dGVycyI6e30sIndhc1BvcHVsYXRlZCI6ZmFsc2UsImFjdGl2ZVBhdGhzIjp7InBhdGhzIjp7InBhc3N3b3JkIjoibW9kaWZ5Iiwicm9sZSI6ImluaXQiLCJmYXZzIjoiaW5pdCIsIl9fdiI6ImluaXQiLCJfaWQiOiJpbml0In0sInN0YXRlcyI6eyJpZ25vcmUiOnt9LCJkZWZhdWx0Ijp7fSwiaW5pdCI6eyJfX3YiOnRydWUsInJvbGUiOnRydWUsImZhdnMiOnRydWUsIl9pZCI6dHJ1ZX0sIm1vZGlmeSI6eyJwYXNzd29yZCI6dHJ1ZX0sInJlcXVpcmUiOnt9fSwic3RhdGVOYW1lcyI6WyJyZXF1aXJlIiwibW9kaWZ5IiwiaW5pdCIsImRlZmF1bHQiLCJpZ25vcmUiXX0sImVtaXR0ZXIiOnsiZG9tYWluIjpudWxsLCJfZXZlbnRzIjp7fSwiX2V2ZW50c0NvdW50IjowLCJfbWF4TGlzdGVuZXJzIjowfX0sImlzTmV3IjpmYWxzZSwiX2RvYyI6eyJyb2xlIjoiYWRtaW4iLCJmYXZzIjpbImJpZ3Vlc19lc3NlbmNpYWwiLCJiaWd1ZXNfY2hpbm8iXSwiX192IjowLCJfaWQiOiJmcmFuY2VzY3JhbWlyZXpAZ21haWwuY29tIn0sIl9wcmVzIjp7IiRfX29yaWdpbmFsX3NhdmUiOltudWxsLG51bGwsbnVsbF19LCJfcG9zdHMiOnsiJF9fb3JpZ2luYWxfc2F2ZSI6W119LCJpYXQiOjE0NjIyNzA3MjF9.o5MMhNhOhnADwwmWjXkhfNWiDA1JFp0DuvR9QBclaCk';
 var userToken = '';
-var ownership = undefined;
+var ownership;
 var rootDir = '/v1';
 
 describe('LOAD EXPRESS APP', function(){
@@ -120,7 +120,7 @@ describe('User creation functions', function() {
         .post(rootDir + '/users')
         .send(test.args)
         .expect(200, test.expected, done);
-    })
+    });
   });
 });
 

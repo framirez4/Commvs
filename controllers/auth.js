@@ -1,6 +1,8 @@
 const jwt     = require('jsonwebtoken');
 const config  = require('../config');
 const User    = require('../models/user');
+const utils = require('./utils');
+
 
 exports.authenticate = (req, res) => {
   User.findOne({ 'email': req.body.email }).exec()
@@ -33,12 +35,7 @@ exports.authenticate = (req, res) => {
   });
 };
 
-/**
- * Endpoint to update the token for a new one before it expiresIn
- * @param  {Object} req reads the header to get the (still) valid token and save it to req.decoded._doc
- * @param  {Object} res
- * @return {Object}     Returns a brand new fresh JWT. { success, message, token }
- */
+
 exports.refreshToken = function(req, res) {
   console.log('OOOOOOOOOOOOMGGGGGGGGGGGGGGGGGGGG' + req.body.token);
   User.findById(
@@ -60,36 +57,19 @@ exports.refreshToken = function(req, res) {
   );
 };
 
-/**
- * Route middleware to verify a token
- * @param  {Object}   req  Reads req.body.token, req.query.token, req.headers[x-access-token]
- * @param  {Object}   res
- * @param  {Function} next Callback to use the next middleware
- * @return {Object}        {success, message} if failed on verify, otherwise it goes on.
- */
+
 exports.verifyToken = function(req, res, next) {
 
   // check header or url parameters or post parameters for token
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (!token) return res.status(403).send({ success: false, message: 'No token provided.' });
 
-  // decode token
-  if (token) {
-    // verifies secret and checks exp
-    jwt.verify(token, config.secret.simple_key, function(err, decoded) {
-      if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded;
-        next();
-      }
-    });
-  } else {
-    // if there is no token, return an error
-    return res.status(403).send({
-        success: false,
-        message: 'No token provided.'
-    });
+  // decode token + verifies secret and checks exp
+  jwt.verify(token, config.secret.simple_key, function(err, decoded) {
+    if (err) return res.json({ success: false, message: 'Failed to authenticate token.' });
 
-  }
+    // if everything is good, save to request for use in other routes
+    req.decoded = decoded;
+    next();
+  });
 };
