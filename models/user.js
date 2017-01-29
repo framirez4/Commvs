@@ -11,9 +11,9 @@ var UserSchema = new Schema({
   'email': {
     type: String,
     required: [true, 'Please, fill a valid email address'],
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
-    unique: true,
-    validate: [ utils.findFieldDuplication('User', 'email'), 'This email adress is already associated to a user' ]
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']//,
+    // unique: true,
+    // validate: [ utils.findFieldDuplication('User', 'email'), 'This email adress is already associated to a user' ]
   },
   'password': {
     type: String,
@@ -41,6 +41,21 @@ UserSchema.pre('save', function (next) {
   })
   .catch(next);
 });
+// UserSchema.pre('update', function (next) {
+//   console.log('modifiedcallupdate', this.password, saltRounds);
+//   //if (!this.isModified('password')) return next(); // Break out if the password hasn't changed
+//
+//   bcrypt.hash(this.password, saltRounds)
+//   .then((hash) => {
+//     console.log('haaaaaaaaaaaash', hash);
+//     this.password = hash;
+//     return next();
+//   })
+//   .catch(err => {
+//     console.log(err);
+//     return next(err);
+//   });
+// });
 
 UserSchema.methods.verifyPassword = function (password) {
   return bcrypt.compare(password, this.password);
