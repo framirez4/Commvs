@@ -52,11 +52,12 @@ exports.editUser = function (req, res) {
 
 
 exports.editPassword = function (req, res) {
-  // console.log('uuuuuuuuuuuser', req.body.password);
+  console.log('uuuuuuuuuuuser', req.body.password);
   // User.update({ _id: req.decoded._doc._id }, { password: req.body.password })
-  // .then(modified => res.json({ success:true, message: modified }))
-  // .catch(err => res.json({ success:false, message: err }));
-  // User.findOne({ _id: req.decoded['_doc']['_id'] })
+  User.findOne({ _id: req.decoded['_doc']['_id'] })
+  .then(user => user.update({ password: req.body.password }))
+  .then(modified => res.json({ success:true, message: modified }))
+  .catch(err => res.json({ success:false, message: err }));
   // .then(function (user) {
   //   user.password = req.body.password;
   //   // Save the user and check for errors
