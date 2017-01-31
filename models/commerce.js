@@ -1,7 +1,7 @@
 // Load packages
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const keygen  = require('keygenerator');
+const keygen  = require('keygen');
 
 //var Ownership = require('./ownershop.js');
 

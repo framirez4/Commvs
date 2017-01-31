@@ -32,32 +32,28 @@ var UserSchema = new Schema({
 
 // Execute before each user.save() call
 UserSchema.pre('save', function (next) {
-  if (!this.isModified('password')) return next(); // Break out if the password hasn't changed
-
   bcrypt.hash(this.password, saltRounds)
-  .then((hash) => {
-    this.password = hash;
-    return next();
-  })
+  .then( hash => next(this.password = hash) )
   .catch(next);
 });
 
 
 UserSchema.pre('update', function (next) {
-  var updateFields = this.getUpdate()['$set'];//this._update['$set']
-  if (!updateFields.hasOwnProperty('password')) return next();
+  if (!this._update['$set'].hasOwnProperty('password')) return next();
 
   bcrypt.hash(updateFields.password, saltRounds)
-  .then((hash) => {
-    this._update['$set'].password = hash;
-    return next();
-  })
+  .then( hash => next(this._update['$set'].password = hash) )
   .catch(next);
 });
 
 
 UserSchema.methods.verifyPassword = function (password) {
   return bcrypt.compare(password, this.password);
+};
+
+//To be called only from the server
+UserSchema.methods.verifyHashedPassword = function (hash) {
+  return bcrypt.compare(hash, this.password);
 };
 
 // Export the Mongoose model

@@ -3,14 +3,7 @@ const User = require('../models/user');
 const utils = require('./utils');
 
 exports.postUsers = function (req, res) {
-  var user = new User({
-    'email': req.body.email,
-    'first_name': req.body.first_name,
-    'last_name': req.body.last_name,
-    'password': req.body.password,
-    'role': req.body.role || 'user',
-    'loc': req.body.loc || ''
-  });
+  var user = new User(req.body);
 
   user.save()
   .then(dbUser => res.json({ success: true, message: 'New user added!', user: dbUser }))
@@ -40,7 +33,6 @@ exports.editUser = function (req, res) {
   delete req.body.owns;
   delete req.body.bookmarks;
 
-  console.log(req.body);
   User.where({ _id: req.decoded._doc._id }).update(req.body)//.exec()
   .then((modified) =>{
     return modified.nModified === 0 ?
@@ -52,23 +44,10 @@ exports.editUser = function (req, res) {
 
 
 exports.editPassword = function (req, res) {
-  console.log('uuuuuuuuuuuser', req.body.password);
-  // User.update({ _id: req.decoded._doc._id }, { password: req.body.password })
   User.findOne({ _id: req.decoded['_doc']['_id'] })
   .then(user => user.update({ password: req.body.password }))
   .then(modified => res.json({ success:true, message: modified }))
   .catch(err => res.json({ success:false, message: err }));
-  // .then(function (user) {
-  //   user.password = req.body.password;
-  //   // Save the user and check for errors
-  //   user.save()
-  //   .then(dbUser => res.json({ success: true, message: 'New user added!', user: dbUser }))
-  //   .catch(err => res.json({ success: false, message: utils.filterValidationModelErrors(err.errors) }));
-  // })
-  // .catch(err => {
-  //   console.log('eeeeeeeeeeeeerrrr', err);
-  //   res.json({ success:false, message: err });
-  // });
 };
 
 

@@ -14,9 +14,8 @@ exports.findFieldDuplication = function (model, field) {
 };
 
 exports.filterValidationModelErrors = function (errors) {
-  for (var key in errors) {
+  for (var key in errors)
     errors[key] = errors[key].properties;
-  }
 
   return errors;
 };

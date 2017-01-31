@@ -5,58 +5,53 @@ const utils = require('./utils');
 
 
 exports.authenticate = (req, res) => {
-  User.findOne({ 'email': req.body.email }).exec()
-  .then((user) => {
-      // No user found with that username
-      if (!user) return res.json({ success: false, message: 'Authentication failed. User not found.' });
-      else if (user) {
-        // Make sure the password is correct
-        user.verifyPassword(req.body.password)
-        .then((isMatch) => {
-          if(!isMatch) return res.json({ success: false, message: 'Authentication failed. Wrong password.'});
+  var query = { email: req.body.email };
+  var password = req.body.password;
 
-          // Limit the use time for an admin-token
-          var token = user.role === 'admin' ?
-            jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" }) :
-            jwt.sign(user, config.secret.simple_key, { expiresIn: "7d" });
-
-          // return the information including token as JSON
-          res.json({
-            success: true,
-            message: 'Enjoy your token!',
-            token: token
-          });
-        });
-      }
-
-  })
-  .catch((err) => {
-    return res.json({ success: false, message: `Error while authenticating: ${err}` });
-  });
+  authenticateUser(query, password, false)
+  .then(token => res.json({ success: false, message: token }))
+  .catch( err => res.json({ success: false, message: `Error while authenticating: ${err}` }));
 };
 
 
 exports.refreshToken = function(req, res) {
-  console.log('OOOOOOOOOOOOMGGGGGGGGGGGGGGGGGGGG' + req.body.token);
-  User.findById(
-    req.decoded._doc._id,
-    function( err, user ){
-      if(req.decoded._doc.password !== user.password) return res.json({success: false, message: 'Token refresh was revoked'});
+  var query = { _id: req.decoded._doc._id };
+  var hashedPassword = req.decoded._doc.password;
 
-      var token = user.role == 'admin' ?
-        jwt.sign(user, config.secret.simple_key, { expiresIn: "2h" }) :
-        jwt.sign(user, config.secret.simple_key, { expiresIn: "7d" });
-
-      // return the information including token as JSON
-      res.json({
-        success: true,
-        message: 'Enjoy your token!',
-        token: token
-      });
-    }
-  );
+  authenticateUser(query, hashedPassword, true)
+  .then( token => res.json({ success: false, message: token }))
+  .catch( err => res.json({ success: false, message: `Error while authenticating: ${err}` }));
 };
 
+
+var authenticateUser = function (query, password, hashed) {
+  return new Promise( (resolve, reject) => {
+    var user;
+    console.log(query, password);
+    User.findOne( query )
+    .then( _user => {
+      if (!_user) return reject('User not found.'); // No user found with that username
+      user = _user;
+
+      return !hashed ? user.verifyPassword(password) : user.verifyHashedPassword(password);
+    })
+    .then( isMatch => {
+      if (!isMatch) return reject('Password was revoked');
+
+      var expiration = user.role == 'admin' ? { expiresIn: "2h" } : { expiresIn: "7d" };
+      var token = jwt.sign(user, config.secret.simple_key, expiration);
+
+      // return the information including token as JSON
+      return resolve({
+        success: true,
+        message: 'Enjoy your token!',
+        token: token,
+        expiration: expiration.expiresIn
+      });
+    })
+    .catch(reject);
+  });
+};
 
 exports.verifyToken = function(req, res, next) {
 
