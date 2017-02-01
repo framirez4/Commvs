@@ -17,18 +17,13 @@ var user = new connectRoles({
 
 // Allow access to admins to admin-only functions
 user.use('run admin-only functions', function (req) {
-  if (req.decoded._doc.role === 'admin') {
-    return true;
-  }
+  if (req.decoded._doc.role === 'admin') return true;
 });
 
 // Allow access to admins or commerce owners to edit data.
 user.use('update an owned comm data', function (req) {
-  if (req.decoded._doc.role === 'admin') {
-    return true;
-  } else {
-    if(req.decoded._doc.owns.indexOf(req.params.comm_id) > -1) return true;
-  }
+  if (req.decoded._doc.role === 'admin') return true;
+  else if(req.decoded._doc.owns.indexOf(req.params.comm_id) > -1) return true;
 });
 
 
