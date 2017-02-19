@@ -1,10 +1,13 @@
+'use strict'
+
 // Load required packages
-const config  = require('./config'); // Log config from files
-const app     = require('./app');   // Log main express app module
+require('dotenv').config()
+const app = require('./app')   // Log main express app module
+const config = require('./config') // Log config from files
 
 // Start the server
-var server = app.listen(config.port, function(){
-  console.info(`Starting Kapeloi-server on port ${config.port}`);
-});
+var server = app.listen(config.server.port, function () {
+  console.info(`Starting Kapeloi-server on port ${config.server.port}`)
+})
 
-module.exports = server;
+module.exports = server

@@ -1,8 +1,8 @@
 // Load packages
-const Comm = require('../models/commerce');
+const Commerce = require('../models/commerce');
 const User = require('../models/user');
 
-exports.searchComms = function(req, res) {
+exports.searchCommerces = function(req, res) {
   Comm.find(
     { name: new RegExp(req.query.name, 'i'),
       location:  new RegExp(req.query.loc, 'i')

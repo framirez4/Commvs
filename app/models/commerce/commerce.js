@@ -6,8 +6,12 @@ const keygen  = require('keygen');
 //var Ownership = require('./ownershop.js');
 
 // Define our schema
-var CommSchema   = new Schema({
-  _id: String,
+var CommSchema = new Schema({
+  hash: {
+    type: String,
+    required: true,
+    unique: true
+  },
   name: { type: String, required: true },
   address: String,
   location: { type: String, required: true },
@@ -18,14 +22,14 @@ var CommSchema   = new Schema({
   web: String,
   schedule: String,
   activity: String,
-  promos: [{
-    name: { type: String, required: true },
-    description: { type: String },
-    valid: {
-      start: { type: Date, required: true, default: Date.now },
-      end: { type: Date, required: true}
-    }
-  }],
+  // promos: [{
+  //   name: { type: String, required: true },
+  //   description: { type: String },
+  //   valid: {
+  //     start: { type: Date, required: true, default: Date.now },
+  //     end: { type: Date, required: true}
+  //   }
+  // }],
   ownership: {
     key: { type: Number, unique: true, length: [8, 'The value of key must be {length}'] },
     owners: [{ type: Schema.Types.ObjectId, ref: 'User' }]

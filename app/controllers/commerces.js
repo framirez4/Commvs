@@ -1,54 +1,24 @@
 // Load packages
 
-const Comm = require('../models/commerce');
+const Commerce = require('../models/commerce');
 const User = require('../models/user');
 //var Ownkey = require('../models/ownkeys');
 
 
 
-/**
- * Create endpoint to add a new Comm
- * @param  {Object} req reads token from header, only admins can insert.
- * From body: name, address, location, phone, description, email, gps, web, schedule, activity
- * ID is built automatically from location_name
- * @param  {Object} res
- * @return {Object}     {success, message, data}
- */
-exports.postComms = function(req, res) {
-  // Create a new instance of the Commerce model
-  var comm = Comm({
-    // Set the commerce properties that came from the POST data
-    name: req.body.name,
-    address: req.body.address,
-    location: req.body.location,
-    phone: req.body.phone,
-    description: req.body.description,
-    email: req.body.email,
-    web: req.body.web,
-    gps: req.body.gps,
-    schedule: req.body.schedule,
-    activity: req.body.activity
-  });
+exports.postCommerce = function(req, res) {
+  var commerce = Commerce(req.body);
 
-  // Save the commerce and check for errors
-  comm.save(function(err) {
-    if (err) return res.json({ success: false, error: err });
-
-    res.json({ success: true, message: { en: 'Commerce added to the list!', es: 'Comercio añadido a la lista!' }, data: comm });
-  });
+  commerce.save()
+  .then( commerce => res.json({ success: true, message: 'Commerce added to the list!', data: commerce }))
+  .catch( err => res.json({ success: false, error: err }));
 };
 
-/**
- * Create endpoint to get all comms. Needs refactor to paginate
- * @param  {Object} req
- * @param  {Object} res
- * @return {Array}     [{Comm}]
- */
 exports.getComms = function(req, res) {
   // Use the Commerce model to find all commerces
   console.log(req.query);
   if(!req.query.loc) req.query.loc = '';
-  Comm.find({
+  Commerce.find({
     //location: new RegExp('.*'+req.query.loc+'.*', 'i')
     location: new RegExp('.*\w*'+req.query.loc+'\w*.*', "ig")
   }, {ownership: 0}, function(err, comms) {
@@ -58,27 +28,15 @@ exports.getComms = function(req, res) {
   });
 };
 
-/**
- * Entpoint to get a Comm by its ID
- * @param  {Object} req read req.params.comm_id
- * @param  {Object} res
- * @return {Object}     {Comm}
- */
 exports.getComm = function(req, res) {
   // Use the Commerce model to find a specific commerce
-  Comm.findById(req.params.comm_id, {ownership: 0}, function(err, comms) {
+  Commerce.findById(req.params.comm_id, {ownership: 0}, function(err, comms) {
     if (err) return res.send(err);
     if (!comms) return res.json({ success: false, message: {en: "Commerce could not be found", es: "No se ha podido encontrar el comercio"} });
     res.json(comms);
   });
 };
 
-/**
- * Endpoint to update a comm by its ID
- * @param  {Object} req Read new data from req.body
- * @param  {Object} res
- * @return {Object}     {New comm data}
- */
 exports.putComm = function(req, res) {
   // Use the Commerce model to find a specific commerce
   if (req.body.hasOwnProperty('_id')) delete req.body._id;
@@ -115,14 +73,9 @@ exports.putComm = function(req, res) {
   );
 };
 
-/**
- * Endpoint to delete a commerce
- * @param  {Object} req req.params.comm_id to delete
- * @param  {Object} res
- * @return {Object}     {success,message}
- */
+
 exports.deleteComm = function(req, res) {
-  Comm.findById(
+  Commerce.findById(
     req.params.comm_id,
     function ( err, comm ) {
       if (!comm) return res.json({ success: false, message: {en: "Commerce could not be found", es: "No se ha podido encontrar el comercio"} });
