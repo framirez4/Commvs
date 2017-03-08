@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "iojs"
+  - "6"
+env:
+  global:
+    - NODE_ENV=development
+    - DB_HOST=mongodb://localhost:27017/kapeloi
+    - PORT=8000
+    - SECRET=secretPass
+services:
+  - mongodb

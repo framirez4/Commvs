@@ -1,10 +1,16 @@
 'use strict'
 
 // Load required packages
-const User = require('../models/user')
-const utils = require('./utils')
+const User = require('../../models/user')
+const utils = require('../../controllers/utils')
 
-exports.postUsers = function (req, res) {
+function up () {
+  return new Promise (function (resolve, reject) {
+    resolve()
+  })
+}
+
+function postUsers (req, res) {
   var user = new User(req.body)
 
   user.save()
@@ -12,19 +18,19 @@ exports.postUsers = function (req, res) {
   .catch(err => res.json({ success: false, message: utils.filterValidationModelErrors(err.errors) }))
 }
 
-exports.getUsers = function (req, res) {
+function getUsers (req, res) {
   User.find()
   .then(users => res.json({ success: true, message: users }))
   .catch(err => res.json_({ success: false, message: err }))
 }
 
-exports.getMe = function (req, res) {
+function getMe (req, res) {
   User.findOne({ _id: req.decoded['_doc']['_id'] })
   .then(dbUser => res.json({ success: true, message: dbUser }))
   .catch(err => res.json({ success: false, message: `There was an error finding the user`, Error: err }))
 }
 
-exports.editUser = function (req, res) {
+function editUser (req, res) {
   // fields not allowed to edit for a user from the API
   delete req.body._id
   delete req.body.password
@@ -41,16 +47,26 @@ exports.editUser = function (req, res) {
   .catch(err => res.json({ success: true, message: `No profile data was modified`, Error: err }))
 }
 
-exports.editPassword = function (req, res) {
+function editPassword (req, res) {
   User.findOne({ _id: req.decoded['_doc']['_id'] })
   .then(user => user.update({ password: req.body.password }))
   .then(modified => res.json({ success: true, message: modified }))
   .catch(err => res.json({ success: false, message: `Password could not be changed`, Error: err }))
 }
 
-exports.deleteUsers = function (req, res) {
+function deleteUsers (req, res) {
   User.findOne({ email: req.query.email })
   .then(dbUser => User.findByIdAndRemove(dbUser._id))
   .then(deletion => res.json({ success: true, message: 'User removed from our database' }))
   .catch(err => res.json({ success: false, message: `User not found or could not be deleted`, Error: err }))
+}
+
+module.exports = {
+  up: up,
+  postUsers: postUsers,
+  getUsers: getUsers,
+  getMe: getMe,
+  editUser: editUser,
+  editPassword: editPassword,
+  deleteUsers: deleteUsers
 }

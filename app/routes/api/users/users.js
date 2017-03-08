@@ -4,7 +4,7 @@
 const connectRoles = require('connect-roles')
 
 // Require controllers
-const userController = require('../../../controllers/users')
+const userController = require('../../../lib/users')
 const authController = require('../../../controllers/auth')
 const user = require('../../../controllers/role')
 
