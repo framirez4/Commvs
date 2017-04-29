@@ -38,3 +38,6 @@ keys
 
 #Dotenv file
 /.env
+
+#vs-code
+.vscode
