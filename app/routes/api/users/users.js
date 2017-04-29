@@ -5,8 +5,8 @@ const connectRoles = require('connect-roles')
 
 // Require controllers
 const userController = require('../../../lib/users')
-const authController = require('../../../controllers/auth')
-const user = require('../../../controllers/role')
+const authController = require('../../../lib/auth')
+const user = require('../../../lib/role')
 
 const router = require('express').Router() // Create router
 

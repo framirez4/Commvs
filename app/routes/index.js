@@ -17,7 +17,7 @@ router.use('/commerces', api.commerces)
 router.use('/promos', api.promos)
 router.use('/users', api.users)
 router.use('/bookmarks', api.bookmarks)
-router.use('/ownership', api.ownership)
+router.use('/ownerships', api.ownerships)
 router.use('/authenticate', api.authenticate) // Authenticate any user. Returns a JWT.
 router.use('/search', api.search)
 

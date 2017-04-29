@@ -1,7 +1,7 @@
 'use strict'
 
 // ==== MAIN ROUTES FILE ====
-const authController = require('../../../controllers/auth')
+const authController = require('../../../lib/auth')
 const router = require('express').Router() // create router
 
 router.route('/')

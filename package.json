@@ -4,7 +4,7 @@
   "repository": "git@github.com:framirez4/kapeloi-server.git",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --require co-mocha app/lib/**/**.spec.js"
+    "test": "mocha app/lib/**/**.spec.js"
   },
   "author": "Francesc Ramírez <francescramirez@gmail.com>",
   "license": "MIT",
@@ -25,10 +25,10 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "co-mocha": "^1.2.0",
     "gulp": "^3.9.1",
     "mocha": "^3.2.0",
     "should": "^11.2.0",
+    "sinon": "^1.17.7",
     "supertest": "^2.0.1"
   }
 }

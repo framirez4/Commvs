@@ -2,13 +2,7 @@
 
 // Load required packages
 const User = require('../../models/user')
-const utils = require('../../controllers/utils')
-
-function up () {
-  return new Promise (function (resolve, reject) {
-    resolve()
-  })
-}
+const utils = require('../utils')
 
 function postUsers (req, res) {
   var user = new User(req.body)
@@ -62,7 +56,6 @@ function deleteUsers (req, res) {
 }
 
 module.exports = {
-  up: up,
   postUsers: postUsers,
   getUsers: getUsers,
   getMe: getMe,

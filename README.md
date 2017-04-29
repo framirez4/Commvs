@@ -1,4 +1,5 @@
-# Commvs
+# Kapeloi Server
+[![Build Status](https://travis-ci.org/framirez4/kapeloi-server.svg?branch=master)](https://travis-ci.org/framirez4/kapeloi-server)
 
 API for a commerce listing app.
 

@@ -2,7 +2,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const bcrypt = require('bcryptjs')
-const utils = require('../../controllers/utils')
+const utils = require('../../lib/utils')
 const saltRounds = 10
 
 // Define our user schema
@@ -19,8 +19,8 @@ var UserSchema = new Schema({
     required: [true, 'Please, insert a valid password'],
     minlength: [6, 'The value of {PATH} is shorter than the minimum allowed length ({MINLENGTH}).']
   },
-  'first_name': { type: String, required: [true, 'Please, insert your first name'] },
-  'last_name': { type: String, required: [true, 'Please, insert your last name'] },
+  'firstName': { type: String, required: [true, 'Please, insert your first name'] },
+  'lastName': { type: String, required: [true, 'Please, insert your last name'] },
   'role': { type: String, enum: ['user', 'admin'], default: 'user' },
 
   'loc': { type: String },

@@ -1,19 +1,19 @@
 'use strict'
 
-const users = require('./users')
 const authenticate = require('./authenticate')
 const bookmarks = require('./bookmarks')
 const commerces = require('./commerces')
-const ownership = require('./ownership')
+const ownerships = require('./ownerships')
 const promos = require('./promos')
 const search = require('./search')
+const users = require('./users')
 
 module.exports = {
-  users: users,
   authenticate: authenticate,
   bookmarks: bookmarks,
   commerces: commerces,
-  ownership: ownership,
+  ownerships: ownerships,
   promos: promos,
-  search: search
+  search: search,
+  users: users
 }
