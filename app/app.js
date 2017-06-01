@@ -1,18 +1,19 @@
 'use strict'
 
 const morgan = require('morgan')
+const winston = require('winston')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const helmet = require('helmet')
 const express = require('express')
 const app = express() // Create express app
 
+const config = require('../config')
 const routes = require('./routes')
-require('./database')
 
-// const mongoose = require('mongoose')
-// mongoose.Promise = global.Promise
-// mongoose.connect(process.env.DB_HOST)  // Connect database
+require('./database')
+winston.level = config.env
+
 
 app
   .set('trust proxy', true)

@@ -4,7 +4,7 @@ const joi = require('joi')
 
 const envVarsSchema = joi.object({
   NODE_ENV: joi.string()
-    .allow(['development', 'production', 'test', 'provision'])
+    .allow(['error', 'warn', 'info', 'verbose', 'debug', 'silly'])
     .required()
 }).unknown()
   .required()
