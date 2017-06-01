@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../../models/user')
 const config = require('../../../config')
 
-exports.authenticate = (req, res) => {
+exports.authenticate = function (req, res) {
   var query = { email: req.body.email }
   var password = req.body.password
 

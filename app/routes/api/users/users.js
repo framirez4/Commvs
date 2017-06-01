@@ -1,8 +1,5 @@
 'use strict'
 
-// Require modules
-const connectRoles = require('connect-roles')
-
 // Require controllers
 const userController = require('../../../lib/users')
 const authController = require('../../../lib/auth')
@@ -12,10 +9,9 @@ const router = require('express').Router() // Create router
 
 // ROUTES for USERS
 router.route('/')
-  .post(userController.postUsers) // Creates new user - Anyone can post a new user - default type is 'user'.
-
+  .post(userController.addUser) // Creates new user - Anyone can post a new user - default role is 'user'.
   .get(authController.verifyToken, user.can('run admin-only functions'), userController.getUsers) // Admin - get a list of users
-  .delete(authController.verifyToken, user.can('run admin-only functions'), userController.deleteUsers) // Admin or owner. only the admin or the account owner can delete the account
+  .delete(authController.verifyToken, user.can('run admin-only functions'), userController.deleteUser) // Admin or owner. only the admin or the account owner can delete the account
 
 router.route('/me') // Always uses the authenticated user
   .get(authController.verifyToken, userController.getMe) // Admin - get a list of users

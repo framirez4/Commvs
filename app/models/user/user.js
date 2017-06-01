@@ -1,3 +1,5 @@
+'use strict'
+
 // Load required packages
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
@@ -37,9 +39,10 @@ UserSchema.pre('save', function (next) {
 })
 
 UserSchema.pre('update', function (next) {
-  if (!this._update['$set'].hasOwnProperty('password')) return next()
+  let updateData = this._update['$set'].password
+  if (!updateData.hasOwnProperty('password')) return next()
 
-  bcrypt.hash(updateFields.password, saltRounds)
+  bcrypt.hash(updateData.password, saltRounds)
   .then(hash => next(this._update['$set'].password = hash))
   .catch(next)
 })
@@ -51,6 +54,15 @@ UserSchema.methods.verifyPassword = function (password) {
 // To be called only from the server
 UserSchema.methods.verifyHashedPassword = function (hash) {
   return bcrypt.compare(hash, this.password)
+}
+
+// UserSchema.methods.
+UserSchema.statics.getMe = function (userId) {
+  return this.findOne({_id: userId})
+}
+
+UserSchema.statics.deleteUser = function (deleteQuery) {
+  return this.where(deleteQuery).findOneAndRemove()
 }
 
 // Export the Mongoose model
