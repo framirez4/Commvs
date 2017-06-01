@@ -1,6 +1,10 @@
 'use strict'
 
 // Load required packages
+const winston = require('winston')
+const config = require('../../../config')
+winston.level = config.env
+
 const User = require('../../models/user')
 const utils = require('../utils')
 
